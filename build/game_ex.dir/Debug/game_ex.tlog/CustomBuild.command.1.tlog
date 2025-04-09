@@ -1,0 +1,10 @@
+^C:\USERS\MR199\SOURCE\CMAKEPROJ\GAME_EX\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/mr199/source/cmakeproj/game_ex -BC:/Users/mr199/source/cmakeproj/game_ex/build --check-stamp-file C:/Users/mr199/source/cmakeproj/game_ex/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
