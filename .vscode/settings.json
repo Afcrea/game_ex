@@ -1,4 +1,8 @@
 {
+    "C_Cpp.intelliSenseEngineFallback": "Enabled",
+    "cmake.debugConfig": {
+        "cwd": "${workspaceFolder}"
+    },
     "files.associations": {
         "algorithm": "cpp",
         "array": "cpp",

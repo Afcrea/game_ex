@@ -1,4 +1,5 @@
 #include "common.h"
+#include "scene_manager.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -22,8 +23,7 @@ int main() {
 
     // glfw 윈도우 생성, 실패하면 에러 출력후 종료
     SPDLOG_INFO("Create glfw window");
-    auto window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME,
-    nullptr, nullptr);
+    auto window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME, nullptr, nullptr);
     if (!window) {
         SPDLOG_ERROR("failed to create glfw window");
         glfwTerminate();
@@ -43,39 +43,21 @@ int main() {
     const char* glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     SPDLOG_INFO("OpenGL context version: {}", glVersion);
 
-    auto imguiContext = ImGui::CreateContext();
-    ImGui::SetCurrentContext(imguiContext);
-    ImGui_ImplGlfw_InitForOpenGL(window, false);
-    ImGui_ImplOpenGL3_Init();
-    ImGui_ImplOpenGL3_CreateFontsTexture();
-    ImGui_ImplOpenGL3_CreateDeviceObjects();
-
-    glClearColor(0.1f, 0.2f, 0.3f, 0.0f);
-
-    // glfw 루프 실행, 윈도우 close 버튼을 누르면 정상 종료
-    SPDLOG_INFO("Start main loop");
+    SceneManager::SetScene(std::make_unique<LobbyScene>());
+    // 루프
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        
-        ImGui::Begin("Example Window");  // Begin 필요!
-        if (ImGui::Button("Click Me!")) {
-            SPDLOG_INFO("Button clicked!");
-        }
-        ImGui::End();
+        // OpenGL 렌더링 (배경 처리)
+        glClearColor(0.0f, 0.0f, 0.1f, 1.0f); // 파란빛 배경 (애니메이션 효과 대신 기본 색)
+        glClear(GL_COLOR_BUFFER_BIT);
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        //SceneManager::Update(deltaTime);
+        SceneManager::Render();
 
         glfwSwapBuffers(window);
     }
 
-    ImGui_ImplOpenGL3_DestroyFontsTexture();
-    ImGui_ImplOpenGL3_DestroyDeviceObjects();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext(imguiContext);
-
+    glfwDestroyWindow(window);
     glfwTerminate();
 }
