@@ -7,7 +7,7 @@ Ui_customize::~Ui_customize() {
     ImGui::DestroyContext();
 }
 
-void Ui_customize::Initiialization() {
+void Ui_customize::Initialization() {
     // ImGui 초기화
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

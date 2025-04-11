@@ -81,6 +81,13 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "xtree": "cpp",
-        "xutility": "cpp"
-    }
+        "xutility": "cpp",
+        "cstdarg": "cpp",
+        "future": "cpp",
+        "numeric": "cpp",
+        "set": "cpp",
+        "stdfloat": "cpp",
+        "unordered_set": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
