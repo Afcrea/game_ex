@@ -7,7 +7,11 @@ class Application
 private:
     Application() {};
     bool Inititialization();
+
     GLFWwindow* mWindow;
+    
+    double mDeltaTime = 0;
+    void CalDeltaTime();
     
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 public:

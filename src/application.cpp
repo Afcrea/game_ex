@@ -2,6 +2,7 @@
 #include "scene_manager.h"
 
 Application::~Application() {
+    SceneManager::Shutdown();
     glfwDestroyWindow(mWindow);
     glfwTerminate();
     SPDLOG_INFO("system shutdown");
@@ -9,13 +10,15 @@ Application::~Application() {
 
 void Application::run() {
     while (!glfwWindowShouldClose(mWindow)) {
+        CalDeltaTime();
+
         glfwPollEvents();
 
         // OpenGL 렌더링 (배경 처리)
         glClearColor(0.0f, 0.0f, 0.1f, 1.0f); // 파란빛 배경 (애니메이션 효과 대신 기본 색)
         glClear(GL_COLOR_BUFFER_BIT);
-
-        //SceneManager::Update(deltaTime); 추후에 델타 타임 구현하면 주석 해제
+        
+        SceneManager::Update(mDeltaTime);
         SceneManager::Render();
 
         glfwSwapBuffers(mWindow);
@@ -74,4 +77,11 @@ bool Application::Inititialization() {
 
 void Application::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
+}
+
+void Application::CalDeltaTime() {
+    double currTime = glfwGetTime();
+    static double prevTime = 0;
+    mDeltaTime = currTime - prevTime;
+    prevTime = currTime;
 }

@@ -10,7 +10,6 @@ public:
     void Shutdown() override;
     static void StartGame();
     static void EndGame();
-
 private:
     float buttonX;
     float buttonY;
