@@ -4,7 +4,7 @@ void MainScene::Init() {
     // 초기화
 }
 
-void MainScene::Update(float deltaTime) {
+void MainScene::Update(double deltaTime) {
     // 게임 로직 업데이트
 }
 

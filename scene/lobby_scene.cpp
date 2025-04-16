@@ -9,7 +9,7 @@ void LobbyScene::Init() {
     Ui_customize::Initialization();
 }
 
-void LobbyScene::Update(float deltaTime) {
+void LobbyScene::Update(double deltaTime) {
     // 게임 로직 업데이트
 }
 

@@ -1,37 +1,12 @@
 #include "application.h"
 #include "scene_manager.h"
+#include "input.h"
 
 Application::~Application() {
     SceneManager::Shutdown();
     glfwDestroyWindow(mWindow);
     glfwTerminate();
     SPDLOG_INFO("system shutdown");
-}
-
-void Application::run() {
-    while (!glfwWindowShouldClose(mWindow)) {
-        CalDeltaTime();
-
-        glfwPollEvents();
-
-        // OpenGL 렌더링 (배경 처리)
-        glClearColor(0.0f, 0.0f, 0.1f, 1.0f); // 파란빛 배경 (애니메이션 효과 대신 기본 색)
-        glClear(GL_COLOR_BUFFER_BIT);
-        
-        SceneManager::Update(mDeltaTime);
-        SceneManager::Render();
-
-        glfwSwapBuffers(mWindow);
-    }
-}
-
-ApplicationUPtr Application::Create() {
-    auto app = ApplicationUPtr(new Application());
-    
-    if(!app->Inititialization()) {
-        SPDLOG_ERROR("Application init error !");
-    }
-    return std::move(app);
 }
 
 bool Application::Inititialization() {
@@ -70,10 +45,44 @@ bool Application::Inititialization() {
     const char* glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     SPDLOG_INFO("OpenGL context version: {}", glVersion);
 
+    Input::Initailize();
+
     SceneManager::SetScene(std::make_unique<LobbyScene>());
 
     return true;
 }
+
+void Application::run() {
+    while (!glfwWindowShouldClose(mWindow)) {
+        CalDeltaTime();
+
+        glfwPollEvents();
+
+        // OpenGL 렌더링 (배경 처리)
+        glClearColor(0.0f, 0.0f, 0.1f, 1.0f); // 파란빛 배경 (애니메이션 효과 대신 기본 색)
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        Input::Update(mWindow);
+
+        if(Input::GetKey(eKeyCode::Q))
+            SPDLOG_INFO("Q 눌림");
+
+        SceneManager::Update(mDeltaTime);
+        SceneManager::Render();
+
+        glfwSwapBuffers(mWindow);
+    }
+}
+
+ApplicationUPtr Application::Create() {
+    auto app = ApplicationUPtr(new Application());
+    
+    if(!app->Inititialization()) {
+        SPDLOG_ERROR("Application init error !");
+    }
+    return std::move(app);
+}
+
 
 void Application::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);

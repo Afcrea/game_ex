@@ -7,7 +7,7 @@
 class SceneManager {
 public:
     static void SetScene(std::unique_ptr<Scene> newScene);
-    static void Update(float deltaTime);
+    static void Update(double deltaTime);
     static void Render();
     static void Shutdown();
 

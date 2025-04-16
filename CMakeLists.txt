@@ -15,7 +15,8 @@ add_executable(${PROJECT_NAME}
     src/main.cpp 
     src/ui_customize.cpp src/ui_customize.cpp
     src/application.h src/application.cpp
-
+    src/input.h src/input.cpp
+    
     scene/scene.h scene/scene_manager.h scene/scene_manager.cpp
     scene/lobby_scene.h scene/lobby_scene.cpp
     scene/main_scene.h scene/main_scene.cpp
