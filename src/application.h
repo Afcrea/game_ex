@@ -6,7 +6,7 @@ class Application
 {
 private:
     Application() {};
-    bool Inititialization();
+    bool Init();
 
     GLFWwindow* mWindow;
     

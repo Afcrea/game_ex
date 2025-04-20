@@ -3,6 +3,7 @@
 #include "ui_customize.h"
 #include "scene_manager.h"
 #include "main_scene.h"
+#include "input.h"
 
 void LobbyScene::Init() {
     // 초기화
@@ -10,6 +11,9 @@ void LobbyScene::Init() {
 }
 
 void LobbyScene::Update(double deltaTime) {
+    if(Input::GetKey(eKeyCode::A)) {
+        SPDLOG_INFO("A 눌림");
+    }
     // 게임 로직 업데이트
 }
 

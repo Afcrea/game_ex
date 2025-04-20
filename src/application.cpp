@@ -9,7 +9,7 @@ Application::~Application() {
     SPDLOG_INFO("system shutdown");
 }
 
-bool Application::Inititialization() {
+bool Application::Init() {
     // glfw 라이브러리 초기화, 실패하면 에러 출력후 종료
     SPDLOG_INFO("Initialize glfw");
     if (!glfwInit()) {
@@ -64,9 +64,6 @@ void Application::run() {
         
         Input::Update(mWindow);
 
-        if(Input::GetKey(eKeyCode::Q))
-            SPDLOG_INFO("Q 눌림");
-
         SceneManager::Update(mDeltaTime);
         SceneManager::Render();
 
@@ -77,7 +74,7 @@ void Application::run() {
 ApplicationUPtr Application::Create() {
     auto app = ApplicationUPtr(new Application());
     
-    if(!app->Inititialization()) {
+    if(!app->Init()) {
         SPDLOG_ERROR("Application init error !");
     }
     return std::move(app);

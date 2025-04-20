@@ -7,12 +7,14 @@ set(WINDOW_NAME "game")
 set(WINDOW_WIDTH 640)
 set(WINDOW_HEIGHT 480)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/gameobjects)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/scene)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/render)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 project(${PROJECT_NAME})
 add_executable(${PROJECT_NAME} 
-    src/main.cpp 
+    src/main.cpp src/common.h src/common.cpp
     src/ui_customize.cpp src/ui_customize.cpp
     src/application.h src/application.cpp
     src/input.h src/input.cpp
@@ -20,6 +22,9 @@ add_executable(${PROJECT_NAME}
     scene/scene.h scene/scene_manager.h scene/scene_manager.cpp
     scene/lobby_scene.h scene/lobby_scene.cpp
     scene/main_scene.h scene/main_scene.cpp
+
+    gameobjects/gameobject.h
+    gameobjects/player.h gameobjects/player.cpp
     )
 
 include(Dependency.cmake)

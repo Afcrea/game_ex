@@ -8,11 +8,11 @@ public:
     void Update(double deltaTime) override;
     void Render() override;
     void Shutdown() override;
-    static void StartGame();
-    static void EndGame();
 private:
     float buttonX;
     float buttonY;
     float buttonS;
     glm::vec2 buttonPos;
+    static void StartGame();
+    static void EndGame();
 };

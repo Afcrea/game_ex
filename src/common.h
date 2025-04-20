@@ -91,3 +91,5 @@ enum class eKeyCode
     F11,
     F12,
 };
+
+std::optional<std::string> LoadTextFile(const std::string& filename);
