@@ -8,6 +8,7 @@ public:
     void Update(double deltaTime) override;
     void Render() override;
     void Shutdown() override;
+
 private:
     float buttonX;
     float buttonY;

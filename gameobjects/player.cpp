@@ -1,36 +1,33 @@
 #include "player.h"
+#include "scene_manager.h"
+#include "main_scene.h"
 
 Player::~Player() {
-
+    SPDLOG_INFO("player shutdown");
 }
 
 PlayerUPtr Player::Create() {
     auto player = PlayerUPtr(new Player());
     player->Init();
+
     return move(player);
 }
 
-void Player::Init() {
-    uint32_t fs = LoadFile("gameobjects/fragment.fs", GL_FRAGMENT_SHADER);
-    uint32_t vs = LoadFile("gameobjects/vertex.vs", GL_VERTEX_SHADER);
+void Player::Configure() {
+    playerVAO = VertexLayout::Create();
 
-    m_program = glCreateProgram();
+    playerVBO = Buffer::CreateWithData(GL_ARRAY_BUFFER, GL_STATIC_DRAW, GetVertices().data(), sizeof(float), GetVertices().size());
+    playerIBO = Buffer::CreateWithData(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, GetIndices().data(), sizeof(uint32_t), GetIndices().size());
     
-    glAttachShader(m_program, fs);
-    glAttachShader(m_program, vs);
+    playerVAO->SetAttrib(0, 3, GL_FLOAT, false, sizeof(float) * 3, 0);
+    glEnable(GL_DEPTH_TEST);
+}
 
-    glLinkProgram(m_program);
+void Player::Init() {
+    fs = Shader::CreateFromFile("gameobjects/fragment.fs", GL_FRAGMENT_SHADER);
+    vs = Shader::CreateFromFile("gameobjects/vertex.vs", GL_VERTEX_SHADER);
 
-    int success = 0;
-    glGetProgramiv(m_program, GL_LINK_STATUS, &success);
-
-    if (!success) {
-        char infoLog[1024];
-        glGetProgramInfoLog(m_program, 1024, nullptr, infoLog);
-        SPDLOG_ERROR("failed to link program: {}", infoLog);
-    }
-
-    float vertices[] = {
+    vertices = {
         // front face (z =  1.0)
         -1.0f, -1.0f,  1.0f,   // v0
          1.0f, -1.0f,  1.0f,   // v1
@@ -43,7 +40,7 @@ void Player::Init() {
         -1.0f,  1.0f, -1.0f    // v7
     };
 
-    unsigned int indices[] = {
+    indices = {
         // front face
         0, 1, 2,   2, 3, 0,
         // right face
@@ -57,22 +54,6 @@ void Player::Init() {
         // top face
         3, 2, 6,   6, 7, 3
     };
-
-    glGenVertexArrays(1, &m_vertexArrayObject);
-    glBindVertexArray(m_vertexArrayObject);
-
-    glGenBuffers(1, &m_vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &m_indexBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-    glEnable(GL_DEPTH_TEST);
 }
 void Player::Update(double dt) { 
 
@@ -81,37 +62,10 @@ void Player::Render() {
     glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUseProgram(m_program);
-    glBindVertexArray(m_vertexArrayObject);
+    glUseProgram(programID);
+    playerVAO->Bind();
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
 void Player::Shutdown() {
 
-}
-
-// 셰이더 로드
-uint32_t Player::LoadFile(const std::string& filename, GLenum shaderType) {
-    auto result = LoadTextFile(filename);
-    if (!result.has_value()) 
-        return 0;
-
-    auto& code = result.value();
-    const char* codePtr = code.c_str();
-    int32_t codeLength = (int32_t)code.length();
-
-    // create and compile shader
-    uint32_t m_shader = glCreateShader(shaderType);
-    glShaderSource(m_shader, 1, (const GLchar* const*)&codePtr, &codeLength);
-    glCompileShader(m_shader);
-    // check compile error
-    int success = 0;
-    glGetShaderiv(m_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        char infoLog[1024];
-        glGetShaderInfoLog(m_shader, 1024, nullptr, infoLog);
-        SPDLOG_ERROR("failed to compile shader: \"{}\"", filename);
-        SPDLOG_ERROR("reason: {}", infoLog);
-        return 0;
-    }
-    return m_shader;
 }

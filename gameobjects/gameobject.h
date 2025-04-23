@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include "scene.h"
 
 CLASS_PTR(GameObject)
 class GameObject {

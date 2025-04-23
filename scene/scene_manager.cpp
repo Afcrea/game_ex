@@ -1,9 +1,9 @@
 // SceneManager.cpp
 #include "scene_manager.h"
 
-std::unique_ptr<Scene> SceneManager::currentScene = nullptr;
+SceneUPtr SceneManager::currentScene = nullptr;
 
-void SceneManager::SetScene(std::unique_ptr<Scene> newScene) {
+void SceneManager::SetScene(SceneUPtr newScene) {
     if (currentScene) currentScene->Shutdown();
     currentScene = std::move(newScene);
     if (currentScene) currentScene->Init();

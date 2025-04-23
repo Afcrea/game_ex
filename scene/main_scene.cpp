@@ -1,11 +1,15 @@
 #pragma once
 #include "main_scene.h"
 #include "player.h"
+
 void MainScene::Init() {
     // 초기화
     auto player = Player::Create();
+    playerShaderProgram = Program::Create({player->GetFragmentShader(), player->GetVertexShader()});
+    player->SetProgramID(playerShaderProgram->Get()); 
+    player->Configure();
     
-    gameObjects.push_back(std::shared_ptr<GameObject>(std::move(player)));
+    gameObjects.push_back(GameObjectPtr(std::move(player)));
 }
 
 void MainScene::Update(double deltaTime) {
@@ -30,12 +34,34 @@ void MainScene::Render() {
 
     auto projection = glm::perspective(glm::radians(45.0f), (float)m_width / (float)m_height, 0.01f, 20.0f);
     
-    auto view = glm::lookAt(
-        m_cameraPos,
-        m_cameraPos + m_cameraFront,
-        m_cameraUp);   
+    glm::vec3 position = glm::vec3(1.0f, 1.0f, 10.0f);
+
+    // auto view = glm::lookAt(
+    //     m_cameraPos,
+    //     m_cameraPos + m_cameraFront,
+    //     m_cameraUp);   
+
+    glm::vec3 targetPos = position; // 모델 중심 (오브젝트 위치)
+    float distance = 5.0f;                 // 모델에서 떨어진 거리
+    float height = 2.0f;                   // 위쪽 높이
+    float yaw = glm::radians(45.0f);       // 모델 뒤쪽에서 45도 비스듬히
+
+    // 방향 계산 (XZ 평면 회전)
+    glm::vec3 offset;
+    offset.x = sin(yaw) * distance;
+    offset.z = cos(yaw) * distance;
+    offset.y = height;
+
+    cameraPos = targetPos + offset;
+    cameraTarget = targetPos;
+    cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    // View 행렬
+    glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
 
     auto model = glm::mat4(1.0f);
+
+    model = glm::translate(model, position);
 
     auto MVP = projection * view * model;
 
@@ -44,12 +70,6 @@ void MainScene::Render() {
 
     GLuint location = glGetUniformLocation(currentProgram, "MVP");
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(MVP));
-
-    m_cameraPos -= 0.001f * m_cameraFront;
-
-    m_cameraPitch = 45;
-
-    SPDLOG_INFO("{}", m_cameraPitch);
 
     for(auto gameObject : gameObjects) {
         gameObject->Render();

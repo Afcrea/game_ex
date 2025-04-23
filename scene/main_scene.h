@@ -3,6 +3,9 @@
 #include "gameobject.h"
 #include "Scene.h"
 #include "player.h"
+#include "program.h"
+#include "buffer.h"
+#include "vertex_layout.h"
 
 class MainScene : public Scene {
 public:
@@ -11,6 +14,8 @@ public:
     void Render() override;
     void Shutdown() override;
 
+    ProgramUPtr playerShaderProgram;
+    
 private:
     std::vector<std::shared_ptr<GameObject>> gameObjects;
     bool m_cameraControl { false };
@@ -24,4 +29,5 @@ private:
     glm::vec3 m_cameraPos { glm::vec3(0.0f, 0.0f, 3.0f) };
     glm::vec3 m_cameraFront { glm::vec3(0.0f, 0.0f, -1.0f) };
     glm::vec3 m_cameraUp { glm::vec3(0.0f, 1.0f, 0.0f) };
+
 };

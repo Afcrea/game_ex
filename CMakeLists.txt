@@ -25,6 +25,12 @@ add_executable(${PROJECT_NAME}
 
     gameobjects/gameobject.h
     gameobjects/player.h gameobjects/player.cpp
+
+    render/program.h render/program.cpp
+    render/shader.h render/shader.cpp
+    render/buffer.h render/buffer.cpp
+    render/vertex_layout.h render/vertex_layout.cpp
+    
     )
 
 include(Dependency.cmake)

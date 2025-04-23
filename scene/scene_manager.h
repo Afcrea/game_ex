@@ -6,11 +6,11 @@
 
 class SceneManager {
 public:
-    static void SetScene(std::unique_ptr<Scene> newScene);
+    static void SetScene(SceneUPtr newScene);
     static void Update(double deltaTime);
     static void Render();
     static void Shutdown();
 
 private:
-    static std::unique_ptr<Scene> currentScene;
+    static SceneUPtr currentScene;
 };
