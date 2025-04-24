@@ -25,11 +25,14 @@ add_executable(${PROJECT_NAME}
 
     gameobjects/gameobject.h
     gameobjects/player.h gameobjects/player.cpp
-
+    gameobjects/Box.h gameobjects/Box.cpp
+    
     render/program.h render/program.cpp
     render/shader.h render/shader.cpp
     render/buffer.h render/buffer.cpp
     render/vertex_layout.h render/vertex_layout.cpp
+    render/texture.h render/texture.cpp
+    render/image.h render/image.cpp
     
     )
 

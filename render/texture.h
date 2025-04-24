@@ -1,7 +1,6 @@
 #pragma once
 #include "common.h"
-
-//#include "image.h"
+#include "image.h"
 
 CLASS_PTR(Texture)
 class Texture {

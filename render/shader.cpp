@@ -11,6 +11,7 @@ ShaderUPtr Shader::CreateFromFile(const std::string& filename,
 Shader::~Shader() {
     if (m_shader) {
         glDeleteShader(m_shader);
+        SPDLOG_INFO("shader shutdown");
     }
 }
 

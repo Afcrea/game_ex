@@ -15,6 +15,7 @@ public:
     void Shutdown() override;
 
     ProgramUPtr playerShaderProgram;
+    ProgramUPtr boxShaderProgram;
     
 private:
     std::vector<std::shared_ptr<GameObject>> gameObjects;

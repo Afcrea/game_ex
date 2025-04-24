@@ -16,8 +16,8 @@ PlayerUPtr Player::Create() {
 void Player::Configure() {
     playerVAO = VertexLayout::Create();
 
-    playerVBO = Buffer::CreateWithData(GL_ARRAY_BUFFER, GL_STATIC_DRAW, GetVertices().data(), sizeof(float), GetVertices().size());
-    playerIBO = Buffer::CreateWithData(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, GetIndices().data(), sizeof(uint32_t), GetIndices().size());
+    playerVBO = Buffer::CreateWithData(GL_ARRAY_BUFFER, GL_STATIC_DRAW, vertices.data(), sizeof(float), vertices.size());
+    playerIBO = Buffer::CreateWithData(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, indices.data(), sizeof(uint32_t), indices.size());
     
     playerVAO->SetAttrib(0, 3, GL_FLOAT, false, sizeof(float) * 3, 0);
     glEnable(GL_DEPTH_TEST);
@@ -59,9 +59,6 @@ void Player::Update(double dt) {
 
 }
 void Player::Render() {
-    glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glUseProgram(programID);
     playerVAO->Bind();
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
