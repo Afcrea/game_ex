@@ -25,19 +25,11 @@ public:
     void SetProgramID(uint32_t ID) { programID = ID; }
 private:
     Player() {};
-    uint32_t m_vertexArrayObject { 0 };
-    uint32_t m_vertexBuffer { 0 };
-    uint32_t m_indexBuffer { 0 };
-    uint32_t m_program { 0 };
-    
+
     ShaderUPtr fs;
     ShaderUPtr vs;
 
     uint32_t programID;
-    BufferUPtr playerVBO;
-    BufferUPtr playerIBO;
-    VertexLayoutUPtr playerVAO;
-
     std::vector<uint32_t>indices;
     std::vector<float>vertices;
 };

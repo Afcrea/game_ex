@@ -61,10 +61,8 @@ void Box::Render() {
     glActiveTexture(GL_TEXTURE0);
     texture->Bind();
     vao->Bind();
-    // 유니폼 위치 찾아서
     GLint loc = glGetUniformLocation(programID, "uTexture");
 
-    // 0번 슬롯에 텍스처 바인딩했으니 0 전달
     glUniform1i(loc, 0);            // 텍스처 유니폼에 슬롯 인덱스 전달
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
 }

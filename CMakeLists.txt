@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.15)
 
 set(PROJECT_NAME game_ex)
+project(${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 17)
 
 set(WINDOW_NAME "game")
@@ -12,12 +13,16 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/scene)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/render)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-project(${PROJECT_NAME})
 add_executable(${PROJECT_NAME} 
     src/main.cpp src/common.h src/common.cpp
     src/ui_customize.cpp src/ui_customize.cpp
     src/application.h src/application.cpp
     src/input.h src/input.cpp
+    src/camera.h  src/camera.cpp
+
+    src/component/component.h
+    src/component/renderer_component.h src/component/renderer_component.cpp
+    src/component/transform_component.h
     
     scene/scene.h scene/scene_manager.h scene/scene_manager.cpp
     scene/lobby_scene.h scene/lobby_scene.cpp
@@ -33,6 +38,8 @@ add_executable(${PROJECT_NAME}
     render/vertex_layout.h render/vertex_layout.cpp
     render/texture.h render/texture.cpp
     render/image.h render/image.cpp
+    render/mesh.h render/mesh.cpp
+    render/model.h render/model.cpp
     
     )
 
