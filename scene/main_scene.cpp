@@ -1,28 +1,32 @@
 #pragma once
 #include "main_scene.h"
 #include "player.h"
-#include "Box.h"
+#include "backpack.h"
 #include "input.h"
 #include "component/renderer_component.h"
+#include "component/transform_component.h"
 
 void MainScene::Init() {
     // 초기화
     auto player = Player::Create();
-    playerShaderProgram = Program::Create({player->GetFragmentShader(), player->GetVertexShader()});
-    player->SetProgramID(playerShaderProgram->Get());
-    player->GetComponent<RendererComponent>()->Configure("gameobjects/player.obj");
+    //playerShaderProgram = Program::Create({player->GetFragmentShader(), player->GetVertexShader()});
+    //player->SetProgramID(playerShaderProgram->Get());
+    //player->GetComponent<RendererComponent>()->Configure("gameobjects/backpack/backpack.obj");
+    //player->GetComponent<RendererComponent>()->Configure(std::move(playerShaderProgram));
     //player->Configure();
 
     gameObjects.push_back(GameObjectPtr(std::move(player)));
 
-    auto box = Box::Create();
-    boxShaderProgram = Program::Create({box->GetFragmentShader(), box->GetVertexShader()});
-    box->SetProgramID(boxShaderProgram->Get());
-    box->Configure();
-    gameObjects.push_back(GameObjectPtr(std::move(box)));
+    auto backpack = Backpack::Create();
+    // boxShaderProgram = Program::Create({box->GetFragmentShader(), box->GetVertexShader()});
+    // box->SetProgramID(boxShaderProgram->Get());
+    // box->Configure();
+    gameObjects.push_back(GameObjectPtr(std::move(backpack)));
 
     m_camera = Camera::Create();
     m_camera->Configure(45.0f, (float)m_width / (float)m_height, 0.1f, 100.0f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    //m_camera->SetTarget(player->GetComponent<TransformComponent>()->GetPosition());
 }
 
 void MainScene::Update(double deltaTime) {
@@ -55,12 +59,21 @@ void MainScene::Update(double deltaTime) {
 void MainScene::Render() {
     glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // OpenGL 상태 초기화
+    glDisable(GL_BLEND);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
     
     for(auto gameObject : gameObjects) {
         auto rendererComponent = gameObject->GetComponent<RendererComponent>();
 
         if(rendererComponent) {
-            rendererComponent->Render(boxShaderProgram.get(), m_camera);
+            rendererComponent->Render(m_camera);
         }
     }
 }

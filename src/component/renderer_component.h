@@ -2,6 +2,7 @@
 #include "component.h"
 #include "buffer.h"
 #include "vertex_layout.h"
+#include "shader.h"
 #include "program.h"
 #include "model.h"
 #include "camera.h"
@@ -13,7 +14,11 @@ public:
     ~RendererComponent();
     
     void Configure(const std::string& filename);
-    void Render(const Program* program, CameraPtr camera) const;
+    void Configure(ShaderPtr fs, ShaderPtr vs);
+    
+    void Render(CameraPtr camera) const;
 private:
+    
     ModelUPtr m_model;
+    ProgramUPtr m_program;
 };

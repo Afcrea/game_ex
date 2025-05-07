@@ -17,19 +17,19 @@ public:
 
     void Configure();
     
-    ShaderPtr GetVertexShader() { return std::move(vs); }
-    ShaderPtr GetFragmentShader() { return std::move(fs); }
-    std::vector<float> GetVertices() { return vertices; }
-    std::vector<uint32_t> GetIndices() { return indices; }
+    //ShaderPtr GetVertexShader() { return std::move(vs); }
+    //ShaderPtr GetFragmentShader() { return std::move(fs); }
+    //std::vector<float> GetVertices() { return vertices; }
+    //std::vector<uint32_t> GetIndices() { return indices; }
 
-    void SetProgramID(uint32_t ID) { programID = ID; }
+    //void SetProgramID(uint32_t ID) { programID = ID; }
 private:
     Player() {};
 
     ShaderUPtr fs;
     ShaderUPtr vs;
 
-    uint32_t programID;
-    std::vector<uint32_t>indices;
-    std::vector<float>vertices;
+    //uint32_t programID;
+    //std::vector<uint32_t>indices;
+    //std::vector<float>vertices;
 };

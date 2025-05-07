@@ -3,8 +3,11 @@
 ShaderUPtr Shader::CreateFromFile(const std::string& filename,
     GLenum shaderType) {
     auto shader = std::unique_ptr<Shader>(new Shader());
-    if (!shader->LoadFile(filename, shaderType))
+    if (!shader->LoadFile(filename, shaderType)){
+        SPDLOG_ERROR("failed to load shader: {}", filename);
         return nullptr;
+    }
+        
     return std::move(shader);
 }
 

@@ -30,7 +30,7 @@ add_executable(${PROJECT_NAME}
 
     gameobjects/gameobject.h
     gameobjects/player.h gameobjects/player.cpp
-    gameobjects/Box.h gameobjects/Box.cpp
+    gameobjects/backpack.h gameobjects/backpack.cpp
     
     render/program.h render/program.cpp
     render/shader.h render/shader.cpp

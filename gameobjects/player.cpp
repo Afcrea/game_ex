@@ -20,12 +20,14 @@ void Player::Configure() {
 }
 
 void Player::Init() {
-    fs = Shader::CreateFromFile("gameobjects/fragment.fs", GL_FRAGMENT_SHADER);
-    vs = Shader::CreateFromFile("gameobjects/vertex.vs", GL_VERTEX_SHADER);
+    fs = Shader::CreateFromFile("gameobjects/lighting.fs", GL_FRAGMENT_SHADER);
+    vs = Shader::CreateFromFile("gameobjects/lighting.vs", GL_VERTEX_SHADER);
 
     auto renderer = AddComponent<RendererComponent>();
-
+    renderer->Configure("gameobjects/player.obj");
+    renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
+    transform->SetPosition(glm::vec3(-2.0f, 1.0f, 0.0f));
 }
 void Player::Update(double dt) { 
 

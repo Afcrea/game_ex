@@ -30,11 +30,11 @@ bool Model::LoadByAssimp(const std::string& filename) {
     };
 
     for (uint32_t i = 0; i < scene->mNumMaterials; i++) {
-    auto material = scene->mMaterials[i];
-    auto glMaterial = Material::Create();
-    glMaterial->diffuse = LoadTexture(material, aiTextureType_DIFFUSE);
-    glMaterial->specular = LoadTexture(material, aiTextureType_SPECULAR);
-    m_materials.push_back(std::move(glMaterial));
+        auto material = scene->mMaterials[i];
+        auto glMaterial = Material::Create();
+        glMaterial->diffuse = LoadTexture(material, aiTextureType_DIFFUSE);
+        glMaterial->specular = LoadTexture(material, aiTextureType_SPECULAR);
+        m_materials.push_back(std::move(glMaterial));
     }
 
     ProcessNode(scene->mRootNode, scene);
