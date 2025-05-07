@@ -19,11 +19,13 @@ add_executable(${PROJECT_NAME}
     src/application.h src/application.cpp
     src/input.h src/input.cpp
     src/camera.h  src/camera.cpp
+    src/physics.h src/physics.cpp
 
     src/component/component.h
     src/component/renderer_component.h src/component/renderer_component.cpp
     src/component/transform_component.h
     src/component/player_component.h src/component/player_component.cpp
+    src/component/physx_component.h src/component/physx_component.cpp
     
     scene/scene.h scene/scene_manager.h scene/scene_manager.cpp
     scene/lobby_scene.h scene/lobby_scene.cpp
@@ -32,6 +34,7 @@ add_executable(${PROJECT_NAME}
     gameobjects/gameobject.h
     gameobjects/player.h gameobjects/player.cpp
     gameobjects/backpack.h gameobjects/backpack.cpp
+    gameobjects/ground.h gameobjects/ground.cpp
     
     render/program.h render/program.cpp
     render/shader.h render/shader.cpp

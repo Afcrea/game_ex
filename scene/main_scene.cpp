@@ -2,24 +2,16 @@
 #include "main_scene.h"
 #include "player.h"
 #include "backpack.h"
+#include "ground.h"
+
 #include "component/renderer_component.h"
 #include "component/transform_component.h"
 #include "input.h"
-#include <PxPhysicsAPI.h>
+#include "physics.h"
 
-using namespace physx;
-
-// PhysX 전역 객체
-static PxDefaultAllocator gAllocator;
-static PxDefaultErrorCallback gErrorCallback;
-PxFoundation* gFoundation = nullptr;
-PxPhysics* gPhysics = nullptr;
-PxScene* gScene = nullptr;
-PxMaterial* gMaterial = nullptr;
-PxRigidDynamic* gCubeActor = nullptr;
-PxDefaultCpuDispatcher* gDispatcher = nullptr;
 
 void MainScene::Init() {
+    Physics::Initialize();
     // 초기화
     auto player = Player::Create();
     gameObjects.push_back(GameObjectPtr(std::move(player)));
@@ -27,11 +19,15 @@ void MainScene::Init() {
     auto backpack = Backpack::Create();
     gameObjects.push_back(GameObjectPtr(std::move(backpack)));
 
+    auto ground = Ground::Create();
+    gameObjects.push_back(GameObjectPtr(std::move(ground)));
+
     m_camera = Camera::Create();
     m_camera->Configure(45.0f, (float)m_width / (float)m_height, 0.1f, 100.0f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void MainScene::Update(float deltaTime) {
+    Physics::StepSimulation(deltaTime);
     // 게임 로직 업데이트
     for(auto gameObject : gameObjects) {
         gameObject->Update(deltaTime);
@@ -61,4 +57,5 @@ void MainScene::Shutdown() {
     for(auto gameObject : gameObjects) {
         gameObject->Shutdown();
     }
+    Physics::Shutdown();
 }

@@ -7,4 +7,6 @@ int main() {
     auto app = Application::Create();
     
     app->run();
+
+    app.reset();
 }

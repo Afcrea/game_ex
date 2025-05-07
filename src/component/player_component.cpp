@@ -1,5 +1,6 @@
 #include "player_component.h"
 #include "transform_component.h"
+#include "physx_component.h"
 #include "input.h"
 #include "gameobject.h"
 
@@ -12,24 +13,40 @@ PlayerComponentUPtr PlayerComponent::Create() {
 }
 
 void PlayerComponent::Update(float dt) {
-    auto transform = GetOwner()->GetComponent<TransformComponent>();
+    auto physx = m_owner->GetComponent<PhysXComponent>();
+    if (!physx) return;
+
+    physx::PxRigidDynamic* actor = static_cast<physx::PxRigidDynamic*>(physx->GetActor());
+    if (!actor) return;
+
+    PxVec3 currentVelocity = actor->getLinearVelocity();
+
+    PxVec3 desiredVelocity = currentVelocity; // 기본적으로 유지
+    const float moveSpeed = 5.0f;
+
     if (Input::GetKey(eKeyCode::W)) {
-        transform->SetPosition(transform->GetPosition() + glm::vec3(1.0f, 0.0f, 0.0f) * 10.0f * dt);
+        desiredVelocity.x = moveSpeed;
     }
     if (Input::GetKey(eKeyCode::S)) {
-        transform->SetPosition(transform->GetPosition() + glm::vec3(-1.0f, 0.0f, 0.0f) * 10.0f * dt);
+        desiredVelocity.x = -moveSpeed;
     }
     if (Input::GetKey(eKeyCode::A)) {
-        transform->SetPosition(transform->GetPosition() + glm::vec3(0.0f, 0.0f, -1.0f) * 10.0f * dt);
+        desiredVelocity.z = -moveSpeed;
     }
     if (Input::GetKey(eKeyCode::D)) {
-        transform->SetPosition(transform->GetPosition() + glm::vec3(0.0f, 0.0f, 1.0f) * 10.0f * dt);
+        desiredVelocity.z = moveSpeed;
     }
-    if (Input::GetKey(eKeyCode::Space)) {
-        transform->SetPosition(transform->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f) * 10.0f * dt);
-    }
-    if (Input::GetKey(eKeyCode::CtrlLeft)) {
-        transform->SetPosition(transform->GetPosition() + glm::vec3(0.0f, -1.0f, 0.0f) * 10.0f * dt);
+
+    // y속도는 중력에 의해 계속 변화해야 하므로 유지
+    desiredVelocity.y = currentVelocity.y;
+
+    actor->setLinearVelocity(desiredVelocity);
+
+    // Transform 위치 출력 (PhysXComponent에서 동기화됨)
+    auto transform = m_owner->GetComponent<TransformComponent>();
+    if (transform) {
+        glm::vec3 pos = transform->GetPosition();
+        spdlog::info("Player Pos: ({}, {}, {})", pos.x, pos.y, pos.z);
     }
 }
 
