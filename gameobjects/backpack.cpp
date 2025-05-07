@@ -15,10 +15,6 @@ BackpackUPtr Backpack::Create() {
     return move(backpack);
 }
 
-void Backpack::Configure() {
-    
-}
-
 void Backpack::Init() {
     fs = Shader::CreateFromFile("gameobjects/lighting.fs", GL_FRAGMENT_SHADER);
     vs = Shader::CreateFromFile("gameobjects/lighting.vs", GL_VERTEX_SHADER);
@@ -29,11 +25,19 @@ void Backpack::Init() {
     auto transform = AddComponent<TransformComponent>();
     transform->SetPosition(glm::vec3(2.0f, 0.0f, 2.0f));
 }
-void Backpack::Update(double dt) { 
-
+void Backpack::Update(float dt) { 
+    for (const auto& [type, component] : m_components) {
+        if (component) {
+            component->Update(dt);
+        }
+    }
 }
-void Backpack::Render() {
-    
+void Backpack::Render(CameraPtr camera) {
+    for (const auto& [type, component] : m_components) {
+        if (component) {
+            component->Render(camera);
+        }
+    }
 }
 void Backpack::Shutdown() {
 

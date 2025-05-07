@@ -9,7 +9,7 @@ void SceneManager::SetScene(SceneUPtr newScene) {
     if (currentScene) currentScene->Init();
 }
 
-void SceneManager::Update(double deltaTime) {
+void SceneManager::Update(float deltaTime) {
     if (currentScene) currentScene->Update(deltaTime);
 }
 

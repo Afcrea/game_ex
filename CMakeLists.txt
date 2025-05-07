@@ -23,6 +23,7 @@ add_executable(${PROJECT_NAME}
     src/component/component.h
     src/component/renderer_component.h src/component/renderer_component.cpp
     src/component/transform_component.h
+    src/component/player_component.h src/component/player_component.cpp
     
     scene/scene.h scene/scene_manager.h scene/scene_manager.cpp
     scene/lobby_scene.h scene/lobby_scene.cpp

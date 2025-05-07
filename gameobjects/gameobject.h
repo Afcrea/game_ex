@@ -1,6 +1,7 @@
 #pragma once
 #include "common.h"
 #include "component/component.h"
+#include "camera.h"
 #include <unordered_map>
 #include <typeindex>
 
@@ -14,14 +15,14 @@ public:
             comp->Init();
     }
 
-    virtual void Update(double deltaTime) {
+    virtual void Update(float deltaTime) {
         for (auto& [type, comp] : m_components)
             comp->Update(deltaTime);
     }
 
-    virtual void Render() {
+    virtual void Render(CameraPtr camera) {
         for (auto& [type, comp] : m_components)
-            comp->Render();
+            comp->Render(camera);
     }
 
     virtual void Shutdown() {

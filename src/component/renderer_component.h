@@ -16,7 +16,7 @@ public:
     void Configure(const std::string& filename);
     void Configure(ShaderPtr fs, ShaderPtr vs);
     
-    void Render(CameraPtr camera) const;
+    void Render(CameraPtr camera) override;
 private:
     
     ModelUPtr m_model;

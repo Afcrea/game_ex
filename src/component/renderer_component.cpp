@@ -43,7 +43,7 @@ void RendererComponent::Configure(ShaderPtr fs, ShaderPtr vs) {
 //     m_model->Draw(m_program.get());
 // }
 
-void RendererComponent::Render(CameraPtr camera) const {
+void RendererComponent::Render(CameraPtr camera) {
     auto projection = camera->GetProjectionMatrix();
     auto view = camera->GetViewMatrix();
     glm::vec3 viewPos = camera->GetPosition();

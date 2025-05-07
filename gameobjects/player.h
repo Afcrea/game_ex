@@ -11,25 +11,13 @@ public:
     ~Player();
     PlayerUPtr static Create();
     void Init() override;
-    void Update(double dt) override;
-    void Render() override;
+    void Update(float dt) override;
+    void Render(CameraPtr camera) override;
     void Shutdown() override;
 
-    void Configure();
-    
-    //ShaderPtr GetVertexShader() { return std::move(vs); }
-    //ShaderPtr GetFragmentShader() { return std::move(fs); }
-    //std::vector<float> GetVertices() { return vertices; }
-    //std::vector<uint32_t> GetIndices() { return indices; }
-
-    //void SetProgramID(uint32_t ID) { programID = ID; }
 private:
     Player() {};
 
     ShaderUPtr fs;
     ShaderUPtr vs;
-
-    //uint32_t programID;
-    //std::vector<uint32_t>indices;
-    //std::vector<float>vertices;
 };

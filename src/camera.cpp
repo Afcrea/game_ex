@@ -30,6 +30,9 @@ void Camera::SetTarget(const glm::vec3& target) {
 
     glm::vec3 direction = glm::normalize(m_target - m_position);
 
+    glm::vec3 offset = glm::vec3(-5.0f, 2.0f, 0.0f); // 이 오프셋은 좌표계에 따라 조절
+    SetPosition(target + offset);
+
     // pitch = 위/아래 각도, yaw = 좌/우 각도
     m_pitch = glm::degrees(asin(direction.y));                         // y축 → pitch
     m_yaw = glm::degrees(atan2(direction.z, direction.x));            // xz 평면 → yaw

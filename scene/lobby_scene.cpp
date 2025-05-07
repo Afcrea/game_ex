@@ -10,7 +10,7 @@ void LobbyScene::Init() {
     Ui_customize::Initialization();
 }
 
-void LobbyScene::Update(double deltaTime) {
+void LobbyScene::Update(float deltaTime) {
     if(Input::GetKey(eKeyCode::A)) {
         SPDLOG_INFO("A 눌림");
     }

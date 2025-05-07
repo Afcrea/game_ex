@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include "camera.h"
 
 class GameObject;
 
@@ -8,8 +9,8 @@ class Component {
 public:
     virtual ~Component() = default;
     virtual void Init() {}
-    virtual void Update(double deltaTime) {}
-    virtual void Render() {}
+    virtual void Update(float deltaTime) {}
+    virtual void Render(CameraPtr camera) {}
     virtual void Shutdown() {}
 
     // 생포인터로

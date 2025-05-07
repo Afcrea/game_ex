@@ -7,7 +7,7 @@
 class SceneManager {
 public:
     static void SetScene(SceneUPtr newScene);
-    static void Update(double deltaTime);
+    static void Update(float deltaTime);
     static void Render();
     static void Shutdown();
 
