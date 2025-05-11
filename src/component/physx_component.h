@@ -10,6 +10,7 @@ public:
     static PhysXComponentPtr Create();
     ~PhysXComponent();
     void Configure(bool isDynamic, float mass = 1.0f);
+    void Configure(float staticFriction, float dynamicFriction, float restitution);
 
     void Init() override;
     void Update(float deltaTime) override;
@@ -20,6 +21,10 @@ public:
 private:
     bool m_isDynamic;
     float m_mass;
+    float m_dynamicFriction = 0.5f;
+    float m_staticFriction = 0.5f;
+    float m_restitution = 0.5f;
+
     PxRigidActor* m_actor = nullptr;
 };
     

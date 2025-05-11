@@ -42,12 +42,11 @@ void PlayerComponent::Update(float dt) {
 
     actor->setLinearVelocity(desiredVelocity);
 
-    // Transform 위치 출력 (PhysXComponent에서 동기화됨)
     auto transform = m_owner->GetComponent<TransformComponent>();
-    if (transform) {
-        glm::vec3 pos = transform->GetPosition();
-        spdlog::info("Player Pos: ({}, {}, {})", pos.x, pos.y, pos.z);
+    if (Input::GetKey(eKeyCode::Q)) {
+        transform->SetRotation(transform->GetRotation() + glm::vec3(0.0f, 1.0f, 0.0f));
     }
+    //SPDLOG_INFO("PlayerComponent::Update: position: {}", transform->GetPosition());
 }
 
 void PlayerComponent::Render(CameraPtr camera) {

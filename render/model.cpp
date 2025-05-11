@@ -19,14 +19,14 @@ bool Model::LoadByAssimp(const std::string& filename) {
   
     auto dirname = filename.substr(0, filename.find_last_of("/"));
     auto LoadTexture = [&](aiMaterial* material, aiTextureType type) -> TexturePtr {
-    if (material->GetTextureCount(type) <= 0)
-        return nullptr;
-    aiString filepath;
-    material->GetTexture(aiTextureType_DIFFUSE, 0, &filepath);
-    auto image = Image::Load(fmt::format("{}/{}", dirname, filepath.C_Str()));
-    if (!image)
-        return nullptr;
-    return Texture::CreateFromImage(image.get());
+        if (material->GetTextureCount(type) <= 0)
+            return nullptr;
+        aiString filepath;
+        material->GetTexture(aiTextureType_DIFFUSE, 0, &filepath);
+        auto image = Image::Load(fmt::format("{}/{}", dirname, filepath.C_Str()));
+        if (!image)
+            return nullptr;
+        return Texture::CreateFromImage(image.get());
     };
 
     for (uint32_t i = 0; i < scene->mNumMaterials; i++) {
@@ -34,6 +34,17 @@ bool Model::LoadByAssimp(const std::string& filename) {
         auto glMaterial = Material::Create();
         glMaterial->diffuse = LoadTexture(material, aiTextureType_DIFFUSE);
         glMaterial->specular = LoadTexture(material, aiTextureType_SPECULAR);
+
+        if (!glMaterial->diffuse) {
+            aiColor3D diffColor(1.0f, 1.0f, 1.0f);
+            if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, diffColor)) {
+                glm::vec4 col{diffColor.r, diffColor.g, diffColor.b, 1.0f};
+                
+                auto image = Image::CreateSingleColorImage(1, 1, col);
+                glMaterial->diffuse = Texture::CreateFromImage(image.get());
+            }
+        } 
+
         m_materials.push_back(std::move(glMaterial));
     }
 
@@ -55,8 +66,7 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene) {
 }
 
 void Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
-    SPDLOG_INFO("process mesh: {}, #vert: {}, #face: {}",
-      mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
+    //SPDLOG_INFO("process mesh: {}, #vert: {}, #face: {}", mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
   
     std::vector<Vertex> vertices;
     vertices.resize(mesh->mNumVertices);

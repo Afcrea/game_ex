@@ -4,8 +4,6 @@
 #include "component/player_component.h"
 #include "component/physx_component.h"
 
-#include "input.h"
-
 Player::~Player() {
     Shutdown();
 }
@@ -22,14 +20,15 @@ void Player::Init() {
     vs = Shader::CreateFromFile("gameobjects/lighting.vs", GL_VERTEX_SHADER);
 
     auto renderer = AddComponent<RendererComponent>();
-    renderer->Configure("gameobjects/player.obj");
+    renderer->Configure("gameobjects/player/playerModel/Y_Bot.fbx");
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
     transform->SetPosition(glm::vec3(-2.0f, 4.0f, 0.0f));
     transform->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
     auto player = AddComponent<PlayerComponent>();
     auto physics = AddComponent<PhysXComponent>();
-    physics->Configure(true, 1.0f);
+    physics->Configure(true, 10.0f);
+    physics->Configure(1.0f, 1.0f, 0.0f);
 
     for (const auto& [type, component] : m_components) {
         if (component) {
@@ -52,8 +51,6 @@ void Player::Render(CameraPtr camera) {
     }
 }
 void Player::Shutdown() {    
-    SPDLOG_INFO("player shutdown");
-
     for (const auto& [type, component] : m_components) {
         if (component) {
             component->Shutdown();

@@ -16,6 +16,12 @@ void PhysXComponent::Configure(bool isDynamic, float mass) {
     m_mass = mass; 
 }
 
+void PhysXComponent::Configure(float staticFriction, float dynamicFriction, float restitution) { 
+    m_staticFriction = staticFriction; 
+    m_dynamicFriction = dynamicFriction; 
+    m_restitution = restitution;
+}
+
 PxRigidDynamic* PhysXComponent::GetDynamicActor() const {
     if (!m_isDynamic || !m_actor) return nullptr;
     return static_cast<PxRigidDynamic*>(m_actor);
@@ -29,9 +35,9 @@ void PhysXComponent::Init() {
     glm::vec3 pos = transform->GetPosition();
     glm::vec3 scale = transform->GetScale();
     PxBoxGeometry geometry(scale.x * 0.5f, scale.y * 0.5f, scale.z * 0.5f);
-
+    
     PxTransform physxTransform(PxVec3(pos.x, pos.y, pos.z));
-    PxMaterial* material = Physics::GetDefaultMaterial();
+    PxMaterial* material = Physics::GetSDK()->createMaterial(m_staticFriction, m_dynamicFriction, m_restitution);
 
     if (m_isDynamic) {
         m_actor = PxCreateDynamic(*Physics::GetSDK(), physxTransform, geometry, *material, m_mass);
@@ -45,12 +51,16 @@ void PhysXComponent::Init() {
 void PhysXComponent::Update(float dt) {
     if (!m_actor) return;
 
-    // if (m_isDynamic) {
-    //     auto pos = m_owner->GetComponent<TransformComponent>()->GetPosition();
-    //     PxVec3 velocity(pos.x, pos.y, pos.z);
-    //     SPDLOG_INFO("PhysXComponent::Update() - Actor: {} Velocity: ({}, {}, {})", m_actor->getConcreteTypeName(), velocity.x, velocity.y, velocity.z);
-    //     dynamicActor->addForce(velocity);
-    // }
+    auto dynamicActor = GetDynamicActor();
+    if (!dynamicActor) return;
+
+    PxVec3 v = dynamicActor->getLinearVelocity();
+
+    if (v.y > 0.0f) {
+        v.y = 0.0f;  // 위로 튕기는 걸 제거
+        dynamicActor->setLinearVelocity(v);
+    }
+
     PxTransform pose = m_actor->getGlobalPose();
     auto transform = m_owner->GetComponent<TransformComponent>();
     if (transform) {

@@ -1,8 +1,8 @@
 #pragma once
 #include "main_scene.h"
-#include "player.h"
-#include "backpack.h"
-#include "ground.h"
+#include "player/player.h"
+#include "backpack/backpack.h"
+#include "ground/ground.h"
 
 #include "component/renderer_component.h"
 #include "component/transform_component.h"

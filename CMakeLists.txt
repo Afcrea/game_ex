@@ -32,9 +32,9 @@ add_executable(${PROJECT_NAME}
     scene/main_scene.h scene/main_scene.cpp
 
     gameobjects/gameobject.h
-    gameobjects/player.h gameobjects/player.cpp
-    gameobjects/backpack.h gameobjects/backpack.cpp
-    gameobjects/ground.h gameobjects/ground.cpp
+    gameobjects/player/player.h gameobjects/player/player.cpp
+    gameobjects/backpack/backpack.h gameobjects/backpack/backpack.cpp
+    gameobjects/ground/ground.h gameobjects/ground/ground.cpp
     
     render/program.h render/program.cpp
     render/shader.h render/shader.cpp

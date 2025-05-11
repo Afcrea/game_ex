@@ -1,33 +1,32 @@
-#include "backpack.h"
-#include "scene_manager.h"
-#include "main_scene.h"
+#include "ground.h"
 #include "component/renderer_component.h"
 #include "component/transform_component.h"
+#include "component/player_component.h"
 #include "component/physx_component.h"
 
-Backpack::~Backpack() {
+GroundUPtr Ground::Create() {
+    auto ground = GroundUPtr(new Ground());
+    ground->Init();
+    return std::move(ground);
+}
+
+Ground::~Ground() {
     Shutdown();
 }
 
-BackpackUPtr Backpack::Create() {
-    auto backpack = BackpackUPtr(new Backpack());
-    backpack->Init();
-
-    return move(backpack);
-}
-
-void Backpack::Init() {
+void Ground::Init() {
     fs = Shader::CreateFromFile("gameobjects/lighting.fs", GL_FRAGMENT_SHADER);
     vs = Shader::CreateFromFile("gameobjects/lighting.vs", GL_VERTEX_SHADER);
 
     auto renderer = AddComponent<RendererComponent>();
-    renderer->Configure("gameobjects/backpack/backpack.obj");
+    renderer->Configure("gameobjects/ground/groundModel/floor.fbx");
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
-    transform->SetPosition(glm::vec3(2.0f, 5.0f, 2.0f));
-    transform->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
+    transform->SetPosition(glm::vec3(0.0f, -100.0f, 0.0f));
+    transform->SetScale(glm::vec3(100.0f, 1.0f, 100.0f));
     auto physics = AddComponent<PhysXComponent>();
-    physics->Configure(true, 1.0f);
+    physics->Configure(false, 10.0f);
+    physics->Configure(1.0f, 1.0f, 0.0f);
 
     for (const auto& [type, component] : m_components) {
         if (component) {
@@ -36,18 +35,15 @@ void Backpack::Init() {
     }
 }
 
-void Backpack::Update(float dt) { 
+void Ground::Update(float dt) {
     for (const auto& [type, component] : m_components) {
         if (component) {
             component->Update(dt);
         }
     }
-
-    auto transform = GetComponent<TransformComponent>();
-    //SPDLOG_INFO("Backpack position: {}, {}, {}", transform->GetPosition().x, transform->GetPosition().y, transform->GetPosition().z);
 }
 
-void Backpack::Render(CameraPtr camera) {
+void Ground::Render(CameraPtr camera) {
     for (const auto& [type, component] : m_components) {
         if (component) {
             component->Render(camera);
@@ -55,8 +51,8 @@ void Backpack::Render(CameraPtr camera) {
     }
 }
 
-void Backpack::Shutdown() {
-    SPDLOG_INFO("Backpack shutdown");
+void Ground::Shutdown() {
+    SPDLOG_INFO("Ground shutdown");
 
     for (const auto& [type, component] : m_components) {
         if (component) {

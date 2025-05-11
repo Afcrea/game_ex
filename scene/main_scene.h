@@ -2,7 +2,6 @@
 #include "common.h"
 #include "gameobject.h"
 #include "Scene.h"
-#include "player.h"
 #include "program.h"
 #include "buffer.h"
 #include "vertex_layout.h"

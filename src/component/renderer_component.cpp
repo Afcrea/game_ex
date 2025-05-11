@@ -49,7 +49,12 @@ void RendererComponent::Render(CameraPtr camera) {
     glm::vec3 viewPos = camera->GetPosition();
 
     glm::vec3 position = m_owner->GetComponent<TransformComponent>()->GetPosition();
+    glm::vec3 scale = m_owner->GetComponent<TransformComponent>()->GetScale();
+
+    glm::vec3 rotation = m_owner->GetComponent<TransformComponent>()->GetRotation();
+
     glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
+    model = glm::scale(model, scale);
 
     glm::mat4 transform = projection * view * model;
 
