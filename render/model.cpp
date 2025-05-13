@@ -8,6 +8,58 @@ ModelUPtr Model::Load(const std::string& filename) {
     return std::move(model);
 }
 
+AnimationUPtr Animation::Load(const std::string& filename) {
+    auto animation = AnimationUPtr(new Animation());
+    if (!animation->LoadByAssimp(filename))
+      return nullptr;
+    return std::move(animation);
+}
+
+bool Animation::LoadByAssimp(const std::string& filename) {
+    Assimp::Importer importer;
+    auto scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_FlipUVs);
+  
+    if (!scene || !scene->mAnimations || scene->mNumAnimations == 0) {
+        SPDLOG_ERROR("failed to load animation: {}", filename);
+        return false;
+    }
+
+    const aiAnimation* aiAnim = scene->mAnimations[0];
+    name = aiAnim->mName.C_Str();
+    duration = (float)aiAnim->mDuration;
+    ticksPerSecond = (float)(aiAnim->mTicksPerSecond != 0.0 ? aiAnim->mTicksPerSecond : 25.0f);
+    
+    for (uint32_t i = 0; i < aiAnim->mNumChannels; i++) {
+        const aiNodeAnim* channel = aiAnim->mChannels[i];
+        BoneAnimation boneAnim;
+        boneAnim.boneName = channel->mNodeName.C_Str();
+
+        uint32_t maxKeyCount = std::max({channel->mNumPositionKeys, channel->mNumRotationKeys, channel->mNumScalingKeys});
+        for (uint32_t k = 0; k < maxKeyCount; k++) {
+            Keyframe key;
+            if (k < channel->mNumPositionKeys) {
+                key.time = (float)channel->mPositionKeys[k].mTime;
+                key.position = glm::vec3(channel->mPositionKeys[k].mValue.x, channel->mPositionKeys[k].mValue.y, channel->mPositionKeys[k].mValue.z);
+            }
+
+            if (k < channel->mNumRotationKeys) {
+                const aiQuaternion& q = channel->mRotationKeys[k].mValue;
+                key.rotation = glm::quat(q.w, q.x, q.y, q.z);
+            }
+
+            if (k < channel->mNumScalingKeys) {
+                key.scale = glm::vec3(channel->mScalingKeys[k].mValue.x, channel->mScalingKeys[k].mValue.y, channel->mScalingKeys[k].mValue.z);
+            }
+
+            boneAnim.keyframes.push_back(key);
+        }
+
+        boneAnimations[boneAnim.boneName] = std::move(boneAnim);
+    }
+  
+    return true;
+}
+
 bool Model::LoadByAssimp(const std::string& filename) {
     Assimp::Importer importer;
     auto scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -48,6 +100,23 @@ bool Model::LoadByAssimp(const std::string& filename) {
         m_materials.push_back(std::move(glMaterial));
     }
 
+    bool hasBones = false;
+    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+        const aiMesh* mesh = scene->mMeshes[i];
+        if (mesh->mNumBones > 0) {
+            hasBones = true;
+            break;
+        }
+    }
+
+    if (hasBones) {
+        SPDLOG_INFO("model: {}, #mesh: {}, #material: {}, #anim: {}", filename, scene->mNumMeshes, scene->mNumMaterials, scene->mNumAnimations);
+        m_skeleton = Skeleton::LoadFromAssimp(scene);
+    } else {
+        m_skeleton = nullptr;
+    }
+    
+    
     ProcessNode(scene->mRootNode, scene);
 
     return true;
@@ -85,14 +154,33 @@ void Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
         } else {
             v.texCoord = glm::vec2(0.0f, 0.0f);
         }
+
+        v.boneIDs = glm::ivec4(0);
+        v.weights = glm::vec4(0.0f);
+    }
+
+    for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; boneIndex++) {
+        aiBone* bone = mesh->mBones[boneIndex];
+        for (uint32_t w = 0; w < bone->mNumWeights; w++) {
+            uint32_t vertexId = bone->mWeights[w].mVertexId;
+            float weight = bone->mWeights[w].mWeight;
+
+            for (int i = 0; i < 4; i++) {
+                if (vertices[vertexId].weights[i] == 0.0f) {
+                    vertices[vertexId].boneIDs[i] = boneIndex;
+                    vertices[vertexId].weights[i] = weight;
+                    break;
+                }
+            }
+        }
     }
   
     std::vector<uint32_t> indices;
     indices.resize(mesh->mNumFaces * 3);
     for (uint32_t i = 0; i < mesh->mNumFaces; i++) {
-      indices[3*i  ] = mesh->mFaces[i].mIndices[0];
-      indices[3*i+1] = mesh->mFaces[i].mIndices[1];
-      indices[3*i+2] = mesh->mFaces[i].mIndices[2];
+        indices[3*i  ] = mesh->mFaces[i].mIndices[0];
+        indices[3*i+1] = mesh->mFaces[i].mIndices[1];
+        indices[3*i+2] = mesh->mFaces[i].mIndices[2];
     }
   
     auto glMesh = Mesh::Create(vertices, indices, GL_TRIANGLES);

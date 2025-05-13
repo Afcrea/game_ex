@@ -92,7 +92,15 @@
         "stdfloat": "cpp",
         "unordered_set": "cpp",
         "typeindex": "cpp",
-        "ranges": "cpp"
+        "ranges": "cpp",
+        "deque": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "stack": "cpp",
+        "any": "cpp",
+        "cinttypes": "cpp",
+        "queue": "cpp",
+        "random": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

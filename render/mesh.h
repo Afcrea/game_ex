@@ -10,6 +10,8 @@ struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 texCoord;
+    glm::ivec4 boneIDs;
+    glm::vec4 weights;
 };
 
 CLASS_PTR(Material);

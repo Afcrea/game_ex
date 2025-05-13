@@ -15,10 +15,11 @@ public:
     
     void Configure(const std::string& filename);
     void Configure(ShaderPtr fs, ShaderPtr vs);
-    
     void Render(CameraPtr camera) override;
+
+    ModelPtr GetModel() const { return m_model; }
 private:
     
-    ModelUPtr m_model;
+    ModelPtr m_model;
     ProgramUPtr m_program;
 };

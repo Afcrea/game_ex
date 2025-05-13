@@ -3,6 +3,7 @@
 #include "component/transform_component.h"
 #include "component/player_component.h"
 #include "component/physx_component.h"
+#include "component/animator_component.h"
 
 Player::~Player() {
     Shutdown();
@@ -17,7 +18,7 @@ PlayerUPtr Player::Create() {
 
 void Player::Init() {
     fs = Shader::CreateFromFile("gameobjects/lighting.fs", GL_FRAGMENT_SHADER);
-    vs = Shader::CreateFromFile("gameobjects/lighting.vs", GL_VERTEX_SHADER);
+    vs = Shader::CreateFromFile("gameobjects/bone.vs", GL_VERTEX_SHADER);
 
     auto renderer = AddComponent<RendererComponent>();
     renderer->Configure("gameobjects/player/playerModel/Y_Bot.fbx");
@@ -29,6 +30,8 @@ void Player::Init() {
     auto physics = AddComponent<PhysXComponent>();
     physics->Configure(true, 10.0f);
     physics->Configure(1.0f, 1.0f, 0.0f);
+    auto animator = AddComponent<AnimatorComponent>();
+    animator->Configure("gameobjects/player/playerModel/Idle.fbx");
 
     for (const auto& [type, component] : m_components) {
         if (component) {
@@ -36,7 +39,7 @@ void Player::Init() {
         }
     }
 }
-void Player::Update(float dt) { 
+void Player::Update(float dt) {
     for (const auto& [type, component] : m_components) {
         if (component) {
             component->Update(dt);

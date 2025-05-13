@@ -1,5 +1,6 @@
 #include "renderer_component.h"
 #include "transform_component.h"
+#include "animator_component.h"
 #include "gameobject.h"
 
 RendererComponent::~RendererComponent() {
@@ -93,24 +94,14 @@ void RendererComponent::Render(CameraPtr camera) {
     m_program->SetUniform("light.diffuse", light.diffuse);
     m_program->SetUniform("light.specular", light.specular);
 
-    // 머티리얼 구조체 전달 (예시)
-    // struct Material {
-    //     glm::vec3 ambient = glm::vec3(0.1f);
-    //     glm::vec3 diffuse = glm::vec3(0.8f);
-    //     glm::vec3 specular = glm::vec3(1.0f);
-    //     float shininess = 32.0f;
-    // };
-    // Material material;
-
-
-    //camera->SetTarget(position);
-
     camera->SetView();
 
-    // glUniform3fv(glGetUniformLocation(m_program->Get(), "material.ambient"), 1, glm::value_ptr(material.ambient));
-    // glUniform3fv(glGetUniformLocation(m_program->Get(), "material.diffuse"), 1, glm::value_ptr(material.diffuse));
-    // glUniform3fv(glGetUniformLocation(m_program->Get(), "material.specular"), 1, glm::value_ptr(material.specular));
-    // glUniform1f(glGetUniformLocation(m_program->Get(), "material.shininess"), material.shininess);
+    auto animator = m_owner->GetComponent<AnimatorComponent>();
+    if (animator) {
+        auto boneMatrices = animator->GetBoneMatrices();
+        GLint locBoneMatrices = glGetUniformLocation(m_program->Get(), "finalBonesMatrices");
+        glUniformMatrix4fv(locBoneMatrices, static_cast<GLsizei>(boneMatrices.size()), GL_FALSE, glm::value_ptr(boneMatrices[0]));
+    }
     
     m_model->Draw(m_program.get());
 }
