@@ -25,6 +25,7 @@ void Player::Init() {
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
     transform->SetPosition(glm::vec3(-2.0f, 4.0f, 0.0f));
+    transform->SetRotation(glm::vec3(0.0f, 90.0f, 0.0f));
     transform->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
     auto player = AddComponent<PlayerComponent>();
     auto physics = AddComponent<PhysXComponent>();

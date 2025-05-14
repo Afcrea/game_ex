@@ -1,5 +1,6 @@
 #include "animator_component.h"
 #include "renderer_component.h"
+#include "transform_component.h"
 #include "gameobject.h"
 
 AnimatorComponentUPtr AnimatorComponent::Create() {
@@ -95,7 +96,8 @@ glm::vec3 AnimatorComponent::InterpolateScale(const std::vector<Animation::Keyfr
 // Recursive processing of bones
 void AnimatorComponent::ProcessBoneRecursive(const std::string& boneName, const glm::mat4& parentTransform, float timeInTicks) {
     // 1) 로컬 트랜스폼
-    glm::mat4 local(1.0f);
+    //glm::mat4 local(1.0f);
+    glm::mat4 local = m_owner->GetComponent<TransformComponent>()->GetTransformMatrix();
     const auto& anim     = m_animations[m_currentAnimationIndex];
     const auto& boneAnims= anim->GetBoneAnimations();
     auto itBA = boneAnims.find(boneName);
@@ -137,6 +139,18 @@ void AnimatorComponent::Update(float deltaTime) {
 
     m_currentTime += deltaTime * anim->GetTicksPerSecond();
     float timeInTicks = fmod(m_currentTime, anim->GetDuration());
-    ProcessBoneRecursive(m_skeleton->GetRootBoneName(), glm::mat4(1.0f), timeInTicks);
-    //m_boneMatrices = m_skeleton->GetBindPoseMatrices();
+
+    const std::string& root = m_skeleton->GetRootBoneName();
+    glm::mat4 rootBind = m_skeleton->GetNodeDefaultTransform(root);
+    auto transform = m_owner->GetComponent<TransformComponent>();
+    glm::vec3 pos = transform->GetPosition();
+    glm::vec3 rot = transform->GetRotation(); // ← radians
+    glm::vec3 scale = transform->GetScale();
+
+    rootBind = glm::translate(rootBind, pos);
+    rootBind = glm::rotate(rootBind, rot.x, glm::vec3(1, 0, 0));
+    rootBind = glm::rotate(rootBind, rot.y, glm::vec3(0, 1, 0));
+    rootBind = glm::rotate(rootBind, rot.z, glm::vec3(0, 0, 1));
+    //rootBind = glm::scale(rootBind, scale);
+    ProcessBoneRecursive(root, rootBind, timeInTicks);
 }
