@@ -15,11 +15,11 @@ BackpackUPtr Backpack::Create() {
 }
 
 void Backpack::Init() {
-    fs = Shader::CreateFromFile("gameobjects/lighting.fs", GL_FRAGMENT_SHADER);
-    vs = Shader::CreateFromFile("gameobjects/lighting.vs", GL_VERTEX_SHADER);
+    fs = Shader::CreateFromFile("Resource/lighting.fs", GL_FRAGMENT_SHADER);
+    vs = Shader::CreateFromFile("Resource/lighting.vs", GL_VERTEX_SHADER);
 
     auto renderer = AddComponent<RendererComponent>();
-    renderer->Configure("gameobjects/backpack/backpackModel/backpack.obj");
+    renderer->Configure("Resource/backpackModel/backpack.obj");
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
     transform->SetPosition(glm::vec3(2.0f, 5.0f, 2.0f));

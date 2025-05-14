@@ -17,11 +17,11 @@ PlayerUPtr Player::Create() {
 }
 
 void Player::Init() {
-    fs = Shader::CreateFromFile("gameobjects/lighting.fs", GL_FRAGMENT_SHADER);
-    vs = Shader::CreateFromFile("gameobjects/bone.vs", GL_VERTEX_SHADER);
+    fs = Shader::CreateFromFile("Resource/lighting.fs", GL_FRAGMENT_SHADER);
+    vs = Shader::CreateFromFile("Resource/bone.vs", GL_VERTEX_SHADER);
 
     auto renderer = AddComponent<RendererComponent>();
-    renderer->Configure("gameobjects/player/playerModel/Y_Bot.fbx");
+    renderer->Configure("Resource/playerModel/Y_Bot.fbx");
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
     transform->SetPosition(glm::vec3(-2.0f, 4.0f, 0.0f));
@@ -31,7 +31,7 @@ void Player::Init() {
     physics->Configure(true, 10.0f);
     physics->Configure(1.0f, 1.0f, 0.0f);
     auto animator = AddComponent<AnimatorComponent>();
-    animator->Configure("gameobjects/player/playerModel/Idle.fbx");
+    animator->Configure("Resource/playerModel/Idle.fbx");
 
     for (const auto& [type, component] : m_components) {
         if (component) {

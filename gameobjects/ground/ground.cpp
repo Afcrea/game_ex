@@ -15,11 +15,11 @@ Ground::~Ground() {
 }
 
 void Ground::Init() {
-    fs = Shader::CreateFromFile("gameobjects/lighting.fs", GL_FRAGMENT_SHADER);
-    vs = Shader::CreateFromFile("gameobjects/lighting.vs", GL_VERTEX_SHADER);
+    fs = Shader::CreateFromFile("Resource/lighting.fs", GL_FRAGMENT_SHADER);
+    vs = Shader::CreateFromFile("Resource/lighting.vs", GL_VERTEX_SHADER);
 
     auto renderer = AddComponent<RendererComponent>();
-    renderer->Configure("gameobjects/ground/groundModel/floor.fbx");
+    renderer->Configure("Resource/groundModel/floor.fbx");
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
     transform->SetPosition(glm::vec3(0.0f, -100.0f, 0.0f));
