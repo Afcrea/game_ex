@@ -22,7 +22,7 @@ void PlayerComponent::Update(float dt) {
 
     PxVec3 currentVelocity = actor->getLinearVelocity();
 
-    PxVec3 desiredVelocity = currentVelocity; // 기본적으로 유지
+    PxVec3 desiredVelocity = PxVec3(0.0f, 0.0f, 0.0f); // 기본적으로 유지
     const float moveSpeed = 5.0f;
 
     if (Input::GetKey(eKeyCode::W)) {
@@ -57,6 +57,12 @@ void PlayerComponent::Update(float dt) {
         animator->SetCurrentAnimation(0);
     }
     //SPDLOG_INFO("PlayerComponent::Update: position: {}", transform->GetPosition());
+}
+
+void PlayerComponent::OnTriggerEnter(GameObject* other) {
+    if (other->GetName() == "Backpack") {
+        SPDLOG_INFO("PlayerComponent::OnTriggerEnter: Coin collected!");
+    }
 }
 
 void PlayerComponent::Render(CameraPtr camera) {

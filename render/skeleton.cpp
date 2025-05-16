@@ -17,9 +17,7 @@ SkeletonUPtr Skeleton::LoadFromAssimp(const aiScene* scene) {
     SPDLOG_INFO("Skeleton::LoadFromAssimp: Loading skeleton from Assimp scene");
 
     auto skeleton = std::make_unique<Skeleton>();
-    // Root bone name
-    //skeleton->m_rootBoneName = scene->mRootNode->mName.C_Str();
-
+    
     // Parse bone info (index + offset matrix) from all meshes
     int boneCounter = 0;
     for (uint32_t mi = 0; mi < scene->mNumMeshes; ++mi) {
@@ -75,53 +73,6 @@ SkeletonUPtr Skeleton::LoadFromAssimp(const aiScene* scene) {
             break;
         }
     }
-
-
-    // Recursively parse node hierarchy and default transforms
-    // std::function<void(const aiNode*, const std::string&)> traverse;
-    // traverse = [&](const aiNode* node, const std::string& parentName) {
-    //     std::string nodeName = node->mName.C_Str();
-    //     // Store default transform for this node
-    //     skeleton->m_nodeDefaultTransforms[nodeName] = AiMatrixToGlm(node->mTransformation);
-    //     // Build hierarchy map
-    //     if (!parentName.empty()) {
-    //         skeleton->m_boneHierarchy[parentName].push_back(nodeName);
-    //     }
-    //     // Recurse children
-    //     for (uint32_t ci = 0; ci < node->mNumChildren; ++ci) {
-    //         traverse(node->mChildren[ci], nodeName);
-    //     }
-    // };
-    // traverse(scene->mRootNode, "");
-
-    // SPDLOG_INFO("=== BoneInfoMap Keys ({} bones) ===", skeleton->m_boneInfoMap.size());
-    // for (auto& [name, info] : skeleton->m_boneInfoMap) {
-    //     SPDLOG_INFO("  {}", name);
-    // }   
-
-    // SPDLOG_INFO("=== Full boneHierarchy (parent -> [children]) ===");
-    // for (auto& [parent, children] : skeleton->m_boneHierarchy) {
-    //     SPDLOG_INFO("  {} -> [{}]", parent, fmt::join(children.begin(), children.end(), ", "));
-    // }
-
-    // std::unordered_set<std::string> allChildren;
-    // for (auto& [parent, children] : skeleton->m_boneHierarchy) {
-    //     for (auto& c : children) allChildren.insert(c);
-    // }
-    // // 2) boneInfoMap 키 중, child가 아닌 것을 루트로
-    // for (auto& [name, info] : skeleton->m_boneInfoMap) {
-    //     if (!allChildren.count(name)) {
-    //         skeleton->m_rootBoneName = name;
-    //         SPDLOG_INFO("Detected real root bone: {}", name);
-    //         break;
-    //     }
-    // }
-
-    // // 못 찾으면 폴백
-    // if (skeleton->m_rootBoneName.empty()) {
-    //     skeleton->m_rootBoneName = scene->mRootNode->mName.C_Str();
-    //     SPDLOG_WARN("Fallback root bone: {}", skeleton->m_rootBoneName);
-    // }
 
     return skeleton;
 }

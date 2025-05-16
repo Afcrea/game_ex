@@ -17,6 +17,8 @@ PlayerUPtr Player::Create() {
 }
 
 void Player::Init() {
+    SetName("Player");
+
     fs = Shader::CreateFromFile("Resource/lighting.fs", GL_FRAGMENT_SHADER);
     vs = Shader::CreateFromFile("Resource/bone.vs", GL_VERTEX_SHADER);
 
@@ -24,7 +26,7 @@ void Player::Init() {
     renderer->Configure("Resource/playerModel/Y_Bot.fbx");
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
-    transform->SetPosition(glm::vec3(-2.0f, 4.0f, 0.0f));
+    transform->SetPosition(glm::vec3(2.0f, 5.0f, 0.0f));
     transform->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
     transform->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
     auto player = AddComponent<PlayerComponent>();

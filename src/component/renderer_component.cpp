@@ -19,31 +19,6 @@ void RendererComponent::Configure(ShaderPtr fs, ShaderPtr vs) {
     m_program = Program::Create({fs, vs});
 }
 
-// void RendererComponent::Render(CameraPtr camera) const {
-    
-//     auto projection = camera->GetProjectionMatrix();
-       
-//     glm::vec3 position = m_owner->GetComponent<TransformComponent>()->GetPosition();
-
-//     auto model = glm::mat4(1.0f);
-
-//     model = glm::translate(model, position);
-
-//     //camera->SetTarget(position);
-
-//     camera->SetView();
-
-//     glm::mat4 view = camera->GetViewMatrix();
-
-//     auto MVP = projection * view * model;
-
-//     glUseProgram(m_program->Get());
-//     GLuint location1 = glGetUniformLocation(m_program->Get(), "MVP");
-//     glUniformMatrix4fv(location1, 1, GL_FALSE, glm::value_ptr(MVP));
-
-//     m_model->Draw(m_program.get());
-// }
-
 void RendererComponent::Render(CameraPtr camera) {
     auto projection = camera->GetProjectionMatrix();
     auto view = camera->GetViewMatrix();
@@ -74,8 +49,8 @@ void RendererComponent::Render(CameraPtr camera) {
 
     // 라이트 구조체 전달
     struct Light {
-        glm::vec3 position { glm::vec3(2.0f, 2.0f, 2.0f) };
-        glm::vec3 direction { glm::vec3(-1.0f, -1.0f, -1.0f) };
+        glm::vec3 position { glm::vec3(2.0f, 10.0f, 2.0f) };
+        glm::vec3 direction { glm::vec3(180.0f, 0.0f, 0.0f) };
         glm::vec2 cutoff { glm::vec2(20.0f, 5.0f) };
         float distance { 32.0f };
         glm::vec3 ambient { glm::vec3(0.1f, 0.1f, 0.1f) };

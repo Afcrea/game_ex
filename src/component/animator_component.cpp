@@ -27,17 +27,6 @@ void AnimatorComponent::Configure(const std::string& filename) {
         m_animations.push_back(std::move(anim));
         m_boneMatrices.resize(boneInfo.size());
     }
-
-    // -----------------------
-    // ② 글로벌 역변환 계산 & 본 매트릭스 초기화
-    // -----------------------
-    // m_skeletonRootName = m_skeleton->GetRootBoneName();
-    // SPDLOG_INFO("Animator root bone: {}", m_skeletonRootName);
-    // glm::mat4 bindRoot = m_skeleton->GetNodeDefaultTransform(m_skeletonRootName);
-    // m_globalInverseTransform = glm::inverse(bindRoot);
-
-    // size_t boneCount = m_skeleton->GetBoneInfoMap().size();
-    // m_boneMatrices.assign(boneCount, glm::mat4(1.0f));
 }
 
 // Interpolation helpers
@@ -149,7 +138,7 @@ void AnimatorComponent::Update(float deltaTime) {
     glm::mat4 rootBind = rootDefault;
     auto transformCmp = m_owner->GetComponent<TransformComponent>();
     rootBind = glm::translate(rootBind, transformCmp->GetPosition());
-    rootBind = glm::translate(rootBind, glm::vec3(0, 100.0f, 0));
+    rootBind = glm::translate(rootBind, glm::vec3(0, 0.0f, 0));
     rootBind = glm::rotate   (rootBind, transformCmp->GetRotation().x, {1,0,0});
     rootBind = glm::rotate   (rootBind, transformCmp->GetRotation().y, {0,1,0});
     rootBind = glm::rotate   (rootBind, transformCmp->GetRotation().z, {0,0,1});

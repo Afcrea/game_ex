@@ -12,7 +12,8 @@ public:
     virtual void Update(float deltaTime) {}
     virtual void Render(CameraPtr camera) {}
     virtual void Shutdown() {}
-
+    virtual void OnTriggerEnter(GameObject* other) {}
+    
     // 생포인터로
     virtual void SetOwner(GameObject* owner) { m_owner = owner; }
     GameObject* GetOwner() const { return m_owner; }

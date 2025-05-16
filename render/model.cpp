@@ -152,7 +152,6 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene) {
 }
 
 void Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
-    //SPDLOG_INFO("process mesh: {}, #vert: {}, #face: {}", mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
   
     std::vector<Vertex> vertices;
     vertices.resize(mesh->mNumVertices);

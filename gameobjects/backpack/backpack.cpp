@@ -15,6 +15,8 @@ BackpackUPtr Backpack::Create() {
 }
 
 void Backpack::Init() {
+    SetName("Backpack");
+
     fs = Shader::CreateFromFile("Resource/lighting.fs", GL_FRAGMENT_SHADER);
     vs = Shader::CreateFromFile("Resource/lighting.vs", GL_VERTEX_SHADER);
 
@@ -22,10 +24,11 @@ void Backpack::Init() {
     renderer->Configure("Resource/backpackModel/backpack.obj");
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
-    transform->SetPosition(glm::vec3(2.0f, 5.0f, 2.0f));
+    transform->SetPosition(glm::vec3(0.0f, 5.0f, 0.0f));
     transform->SetScale(glm::vec3(2.0f, 2.1f, 2.1f));
     auto physics = AddComponent<PhysXComponent>();
-    physics->Configure(true, 1.0f);
+    physics->Configure(false, 1.0f);
+    physics->SetTrigger(true);
 
     for (const auto& [type, component] : m_components) {
         if (component) {

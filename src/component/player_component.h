@@ -10,5 +10,6 @@ public:
     void Update(float deltaTime) override;
     void Render(CameraPtr camera) override;
     
+    void OnTriggerEnter(GameObject* other) override;
 private:
 };

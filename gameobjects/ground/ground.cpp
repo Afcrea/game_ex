@@ -15,6 +15,8 @@ Ground::~Ground() {
 }
 
 void Ground::Init() {
+    SetName("Ground");
+
     fs = Shader::CreateFromFile("Resource/lighting.fs", GL_FRAGMENT_SHADER);
     vs = Shader::CreateFromFile("Resource/lighting.vs", GL_VERTEX_SHADER);
 
@@ -22,7 +24,7 @@ void Ground::Init() {
     renderer->Configure("Resource/groundModel/floor.fbx");
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
-    transform->SetPosition(glm::vec3(0.0f, -100.0f, 0.0f));
+    transform->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     transform->SetScale(glm::vec3(100.0f, 1.0f, 100.0f));
     auto physics = AddComponent<PhysXComponent>();
     physics->Configure(false, 10.0f);

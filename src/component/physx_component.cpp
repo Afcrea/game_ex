@@ -28,7 +28,6 @@ PxRigidDynamic* PhysXComponent::GetDynamicActor() const {
 }
 
 void PhysXComponent::Init() {
-    
     auto transform = m_owner->GetComponent<TransformComponent>();
     if (!transform) return;
 
@@ -39,13 +38,18 @@ void PhysXComponent::Init() {
     PxTransform physxTransform(PxVec3(pos.x, pos.y, pos.z));
     PxMaterial* material = Physics::GetSDK()->createMaterial(m_staticFriction, m_dynamicFriction, m_restitution);
 
-    if (m_isDynamic) {
+    if (m_isTrigger) {
+        PxRigidStatic* actor = Physics::GetSDK()->createRigidStatic(physxTransform);
+        PxRigidActorExt::createExclusiveShape(*actor, geometry, *material, PxShapeFlag::eTRIGGER_SHAPE);
+        m_actor = actor;
+    } else if (m_isDynamic) {
         m_actor = PxCreateDynamic(*Physics::GetSDK(), physxTransform, geometry, *material, m_mass);
+        m_actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true); 
     } else {
         m_actor = PxCreateStatic(*Physics::GetSDK(), physxTransform, geometry, *material);
     }
 
-    m_actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true); 
+    m_actor->userData = m_owner;
 
     Physics::GetScene()->addActor(*m_actor);
 }
