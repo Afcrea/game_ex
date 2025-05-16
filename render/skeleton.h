@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include <assimp/scene.h>
 
 struct aiScene;
 
@@ -15,6 +16,7 @@ class Skeleton {
 public:
     // root 노드 이름
     const std::string& GetRootBoneName() const { return m_rootBoneName; }
+    void SetRootBoneName(const std::string& name) { m_rootBoneName = name; }
     
     // boneName -> BoneInfo
     const std::unordered_map<std::string, BoneInfo>& GetBoneInfoMap() const { return m_boneInfoMap; }
@@ -43,4 +45,6 @@ private:
     std::unordered_map<std::string, BoneInfo> m_boneInfoMap;
     std::unordered_map<std::string, std::vector<std::string>> m_boneHierarchy;
     std::unordered_map<std::string, glm::mat4> m_nodeDefaultTransforms;
+
+    const aiNode* FindNode(const aiNode* node, const std::string& name) const;
 };

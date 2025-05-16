@@ -104,7 +104,7 @@ set(DEP_LIST ${DEP_LIST} dep_glm)
 ExternalProject_Add(
   dep_assimp
   GIT_REPOSITORY "https://github.com/assimp/assimp"
-  GIT_TAG "v5.0.1"
+  GIT_TAG "v5.4.3"
   GIT_SHALLOW 1
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
@@ -121,7 +121,7 @@ set(DEP_LIST ${DEP_LIST} dep_assimp)
 set(DEP_LIBS ${DEP_LIBS}
   assimp-vc143-mt$<$<CONFIG:Debug>:d>
   zlibstatic$<$<CONFIG:Debug>:d>
-  IrrXML$<$<CONFIG:Debug>:d>
+  #IrrXML$<$<CONFIG:Debug>:d>
 )
 
 # PhysX via vcpkg

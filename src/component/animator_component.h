@@ -23,8 +23,12 @@ private:
     std::vector<glm::mat4> m_boneMatrices;
     SkeletonPtr m_skeleton;
 
-    glm::vec3 InterpolatePosition(const std::vector<Animation::Keyframe>& keys, float time);
-    glm::quat InterpolateRotation(const std::vector<Animation::Keyframe>& keys, float time);
-    glm::vec3 InterpolateScale(const std::vector<Animation::Keyframe>& keys, float time);
+    glm::mat4 m_globalInverseTransform;
+
+    std::string m_skeletonRootName;
+
+    glm::vec3 InterpolatePosition(const std::vector<Animation::KeyPosition>& keys, float time);
+    glm::quat InterpolateRotation(const std::vector<Animation::KeyRotation>& keys, float time);
+    glm::vec3 InterpolateScale(const std::vector<Animation::KeyScale>& keys, float time);
     void ProcessBoneRecursive(const std::string& boneName, const glm::mat4& parentTransform, float timeInTicks);
 };

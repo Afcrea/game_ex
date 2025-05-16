@@ -35,16 +35,24 @@ CLASS_PTR(Animation);
 class Animation {
 public:
 
-    struct Keyframe {
-        float time;
-        glm::vec3 position;
-        glm::quat rotation;
-        glm::vec3 scale;
+    struct KeyPosition {
+        float      time;
+        glm::vec3  value;
+    };
+    struct KeyRotation {
+        float      time;
+        glm::quat  value;
+    };
+    struct KeyScale {
+        float      time;
+        glm::vec3  value;
     };
 
     struct BoneAnimation {
         std::string boneName;
-        std::vector<Keyframe> keyframes; // 시간순
+        std::vector<KeyPosition> positions;
+        std::vector<KeyRotation> rotations;
+        std::vector<KeyScale>    scales;
     };
 
     float GetDuration() const { return duration; }

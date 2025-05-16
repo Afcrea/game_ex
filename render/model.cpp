@@ -17,46 +17,63 @@ AnimationUPtr Animation::Load(const std::string& filename) {
 
 bool Animation::LoadByAssimp(const std::string& filename) {
     Assimp::Importer importer;
-    auto scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_FlipUVs);
-  
-    if (!scene || !scene->mAnimations || scene->mNumAnimations == 0) {
+    const aiScene* scene = importer.ReadFile(
+        filename,
+        aiProcess_Triangulate |
+        aiProcess_FlipUVs    |
+        aiProcess_CalcTangentSpace
+    );
+    if (!scene || scene->mNumAnimations == 0) {
         SPDLOG_ERROR("failed to load animation: {}", filename);
         return false;
     }
 
     const aiAnimation* aiAnim = scene->mAnimations[0];
-    name = aiAnim->mName.C_Str();
-    duration = (float)aiAnim->mDuration;
-    ticksPerSecond = (float)(aiAnim->mTicksPerSecond != 0.0 ? aiAnim->mTicksPerSecond : 25.0f);
-    
-    for (uint32_t i = 0; i < aiAnim->mNumChannels; i++) {
+    name           = aiAnim->mName.C_Str();
+    duration       = static_cast<float>(aiAnim->mDuration);
+    ticksPerSecond = aiAnim->mTicksPerSecond != 0.0
+                     ? static_cast<float>(aiAnim->mTicksPerSecond)
+                     : 25.0f;
+
+    // 채널별(Bone) 처리
+    for (uint32_t i = 0; i < aiAnim->mNumChannels; ++i) {
         const aiNodeAnim* channel = aiAnim->mChannels[i];
-        BoneAnimation boneAnim;
-        boneAnim.boneName = channel->mNodeName.C_Str();
+        BoneAnimation ba;
+        ba.boneName = channel->mNodeName.C_Str();
 
-        uint32_t maxKeyCount = std::max({channel->mNumPositionKeys, channel->mNumRotationKeys, channel->mNumScalingKeys});
-        for (uint32_t k = 0; k < maxKeyCount; k++) {
-            Keyframe key;
-            if (k < channel->mNumPositionKeys) {
-                key.time = (float)channel->mPositionKeys[k].mTime;
-                key.position = glm::vec3(channel->mPositionKeys[k].mValue.x, channel->mPositionKeys[k].mValue.y, channel->mPositionKeys[k].mValue.z);
-            }
-
-            if (k < channel->mNumRotationKeys) {
-                const aiQuaternion& q = channel->mRotationKeys[k].mValue;
-                key.rotation = glm::quat(q.w, q.x, q.y, q.z);
-            }
-
-            if (k < channel->mNumScalingKeys) {
-                key.scale = glm::vec3(channel->mScalingKeys[k].mValue.x, channel->mScalingKeys[k].mValue.y, channel->mScalingKeys[k].mValue.z);
-            }
-
-            boneAnim.keyframes.push_back(key);
+        // 1) KeyPosition 벡터
+        ba.positions.reserve(channel->mNumPositionKeys);
+        for (uint32_t k = 0; k < channel->mNumPositionKeys; ++k) {
+            const auto& pk = channel->mPositionKeys[k];
+            ba.positions.push_back({
+                static_cast<float>(pk.mTime),
+                glm::vec3(pk.mValue.x, pk.mValue.y, pk.mValue.z)
+            });
         }
 
-        boneAnimations[boneAnim.boneName] = std::move(boneAnim);
+        // 2) KeyRotation 벡터
+        ba.rotations.reserve(channel->mNumRotationKeys);
+        for (uint32_t k = 0; k < channel->mNumRotationKeys; ++k) {
+            const auto& rk = channel->mRotationKeys[k];
+            ba.rotations.push_back({
+                static_cast<float>(rk.mTime),
+                glm::quat(rk.mValue.w, rk.mValue.x, rk.mValue.y, rk.mValue.z)
+            });
+        }
+
+        // 3) KeyScale 벡터
+        ba.scales.reserve(channel->mNumScalingKeys);
+        for (uint32_t k = 0; k < channel->mNumScalingKeys; ++k) {
+            const auto& sk = channel->mScalingKeys[k];
+            ba.scales.push_back({
+                static_cast<float>(sk.mTime),
+                glm::vec3(sk.mValue.x, sk.mValue.y, sk.mValue.z)
+            });
+        }
+
+        boneAnimations[ba.boneName] = std::move(ba);
     }
-  
+
     return true;
 }
 

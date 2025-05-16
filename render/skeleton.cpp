@@ -1,6 +1,4 @@
 #include "skeleton.h"
-#include <assimp/scene.h>
-#include <glm/glm.hpp>
 #include <functional>
 
 // Convert Assimp matrix to glm::mat4
@@ -20,7 +18,7 @@ SkeletonUPtr Skeleton::LoadFromAssimp(const aiScene* scene) {
 
     auto skeleton = std::make_unique<Skeleton>();
     // Root bone name
-    skeleton->m_rootBoneName = scene->mRootNode->mName.C_Str();
+    //skeleton->m_rootBoneName = scene->mRootNode->mName.C_Str();
 
     // Parse bone info (index + offset matrix) from all meshes
     int boneCounter = 0;
@@ -39,22 +37,91 @@ SkeletonUPtr Skeleton::LoadFromAssimp(const aiScene* scene) {
         }
     }
 
+    skeleton->m_boneHierarchy.clear();
+
+    // 2) boneInfoMap에 있는 모든 본에 대해, aiNode 트리에서 해당 노드를 찾고
+    //    부모 노드로 거슬러 올라가면서 첫 번째로 boneInfoMap에 있는 노드를 parent로 간주
+    for (auto& [boneName, info] : skeleton->m_boneInfoMap) {
+        const aiNode* node = skeleton->FindNode(scene->mRootNode, boneName);
+        if (!node) continue;
+
+        const aiNode* parent = node->mParent;
+        // boneInfoMap에 등록된 부모가 나올 때까지 계속 위로
+        while (parent && skeleton->m_boneInfoMap.count(parent->mName.C_Str()) == 0) {
+            parent = parent->mParent;
+        }
+
+        if (parent && skeleton->m_boneInfoMap.count(parent->mName.C_Str())) {
+            // parent->mName 은 std::string이므로 .C_Str() 대신 그대로 사용
+            skeleton->m_boneHierarchy[parent->mName.C_Str()]
+                                .push_back(boneName);
+        }
+        // parent가 없으면(bone이 최상위라면) 자식 없이 넘어갑니다
+    }
+
+    // 3) m_rootBoneName 결정: boneInfoMap 중 parent를 못 찾은(최상위) 본
+    for (auto& [boneName, info] : skeleton->m_boneInfoMap) {
+        // 이 본이 어떤 parent 의 child로도 등록되지 않았다면
+        bool isChild = false;
+        for (auto& [p, kids] : skeleton->m_boneHierarchy) {
+            if (std::find(kids.begin(), kids.end(), boneName) != kids.end()) {
+                isChild = true;
+                break;
+            }
+        }
+        if (!isChild) {
+            skeleton->m_rootBoneName = boneName;
+            SPDLOG_INFO("Detected real root bone: {}", boneName);
+            break;
+        }
+    }
+
+
     // Recursively parse node hierarchy and default transforms
-    std::function<void(const aiNode*, const std::string&)> traverse;
-    traverse = [&](const aiNode* node, const std::string& parentName) {
-        std::string nodeName = node->mName.C_Str();
-        // Store default transform for this node
-        skeleton->m_nodeDefaultTransforms[nodeName] = AiMatrixToGlm(node->mTransformation);
-        // Build hierarchy map
-        if (!parentName.empty()) {
-            skeleton->m_boneHierarchy[parentName].push_back(nodeName);
-        }
-        // Recurse children
-        for (uint32_t ci = 0; ci < node->mNumChildren; ++ci) {
-            traverse(node->mChildren[ci], nodeName);
-        }
-    };
-    traverse(scene->mRootNode, "");
+    // std::function<void(const aiNode*, const std::string&)> traverse;
+    // traverse = [&](const aiNode* node, const std::string& parentName) {
+    //     std::string nodeName = node->mName.C_Str();
+    //     // Store default transform for this node
+    //     skeleton->m_nodeDefaultTransforms[nodeName] = AiMatrixToGlm(node->mTransformation);
+    //     // Build hierarchy map
+    //     if (!parentName.empty()) {
+    //         skeleton->m_boneHierarchy[parentName].push_back(nodeName);
+    //     }
+    //     // Recurse children
+    //     for (uint32_t ci = 0; ci < node->mNumChildren; ++ci) {
+    //         traverse(node->mChildren[ci], nodeName);
+    //     }
+    // };
+    // traverse(scene->mRootNode, "");
+
+    // SPDLOG_INFO("=== BoneInfoMap Keys ({} bones) ===", skeleton->m_boneInfoMap.size());
+    // for (auto& [name, info] : skeleton->m_boneInfoMap) {
+    //     SPDLOG_INFO("  {}", name);
+    // }   
+
+    // SPDLOG_INFO("=== Full boneHierarchy (parent -> [children]) ===");
+    // for (auto& [parent, children] : skeleton->m_boneHierarchy) {
+    //     SPDLOG_INFO("  {} -> [{}]", parent, fmt::join(children.begin(), children.end(), ", "));
+    // }
+
+    // std::unordered_set<std::string> allChildren;
+    // for (auto& [parent, children] : skeleton->m_boneHierarchy) {
+    //     for (auto& c : children) allChildren.insert(c);
+    // }
+    // // 2) boneInfoMap 키 중, child가 아닌 것을 루트로
+    // for (auto& [name, info] : skeleton->m_boneInfoMap) {
+    //     if (!allChildren.count(name)) {
+    //         skeleton->m_rootBoneName = name;
+    //         SPDLOG_INFO("Detected real root bone: {}", name);
+    //         break;
+    //     }
+    // }
+
+    // // 못 찾으면 폴백
+    // if (skeleton->m_rootBoneName.empty()) {
+    //     skeleton->m_rootBoneName = scene->mRootNode->mName.C_Str();
+    //     SPDLOG_WARN("Fallback root bone: {}", skeleton->m_rootBoneName);
+    // }
 
     return skeleton;
 }
@@ -90,4 +157,14 @@ void Skeleton::BuildBindPose(const std::string& boneName,
             BuildBindPose(child, global, outMatrices);
         }
     }
+}
+
+const aiNode* Skeleton::FindNode(const aiNode* node, const std::string& name) const {
+    if (!node) return nullptr;
+    if (node->mName.C_Str() == name) return node;
+    for (uint32_t i = 0; i < node->mNumChildren; ++i) {
+        if (auto f = FindNode(node->mChildren[i], name); f)
+            return f;
+    }
+    return nullptr;
 }

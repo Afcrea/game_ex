@@ -1,6 +1,7 @@
 #include "player_component.h"
 #include "transform_component.h"
 #include "physx_component.h"
+#include "animator_component.h"
 #include "input.h"
 #include "gameobject.h"
 
@@ -44,7 +45,16 @@ void PlayerComponent::Update(float dt) {
 
     auto transform = m_owner->GetComponent<TransformComponent>();
     if (Input::GetKey(eKeyCode::Q)) {
-        transform->SetRotation(transform->GetRotation() + glm::vec3(0.0f, 1.0f, 0.0f));
+        transform->SetRotation(transform->GetRotation() + glm::vec3(0.0f, 0.01f, 0.0f));
+    }
+
+    if(Input::GetKey(eKeyCode::E)) {
+        auto animator = m_owner->GetComponent<AnimatorComponent>();
+        animator->SetCurrentAnimation(1);
+    }
+    else {
+        auto animator = m_owner->GetComponent<AnimatorComponent>();
+        animator->SetCurrentAnimation(0);
     }
     //SPDLOG_INFO("PlayerComponent::Update: position: {}", transform->GetPosition());
 }

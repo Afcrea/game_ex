@@ -21,136 +21,140 @@ void AnimatorComponent::Configure(const std::string& filename) {
     // 스켈레톤에 없는 본 이름은 애니메이션에서 제외
     const auto& boneInfo = m_skeleton->GetBoneInfoMap();
     auto boneAnim = anim->GetBoneAnimation();
-    for (auto it = boneAnim.begin(); it != boneAnim.end(); ) {
-        if (boneInfo.find(it->first) == boneInfo.end()) {
-            spdlog::warn("Animation '{}' has channel '{}' which is not in skeleton → skipping", filename, it->first);
-            it = boneAnim.erase(it);
-        } else {
-            ++it;
-        }
-    }
 
     // 남은 채널이 있으면 등록
     if (!boneAnim.empty()) {
         m_animations.push_back(std::move(anim));
         m_boneMatrices.resize(boneInfo.size());
     }
+
+    // -----------------------
+    // ② 글로벌 역변환 계산 & 본 매트릭스 초기화
+    // -----------------------
+    // m_skeletonRootName = m_skeleton->GetRootBoneName();
+    // SPDLOG_INFO("Animator root bone: {}", m_skeletonRootName);
+    // glm::mat4 bindRoot = m_skeleton->GetNodeDefaultTransform(m_skeletonRootName);
+    // m_globalInverseTransform = glm::inverse(bindRoot);
+
+    // size_t boneCount = m_skeleton->GetBoneInfoMap().size();
+    // m_boneMatrices.assign(boneCount, glm::mat4(1.0f));
 }
 
 // Interpolation helpers
-glm::vec3 AnimatorComponent::InterpolatePosition(const std::vector<Animation::Keyframe>& keys, float time) {
+glm::vec3 AnimatorComponent::InterpolatePosition(const std::vector<Animation::KeyPosition>& keys,float time) {
     if (keys.empty()) return glm::vec3(0.0f);
-    if (keys.size() == 1) return keys[0].position;
+    if (keys.size() == 1) return keys[0].value;
 
-    // Find pair of keys surrounding time
-    size_t index = 0;
-    for (size_t i = 0; i + 1 < keys.size(); ++i) {
-        if (time < keys[i+1].time) {
-            index = i;
-            break;
-        }
-    }
-    const auto& keyA = keys[index];
-    const auto& keyB = keys[std::min(index + 1, keys.size()-1)];
-    float dt = keyB.time - keyA.time;
-    float factor = dt > 0.0f ? (time - keyA.time) / dt : 0.0f;
-    return glm::mix(keyA.position, keyB.position, factor);
+    // 현재 time 에서 앞뒤 키 인덱스 찾기
+    uint32_t i = 0;
+    while (i + 1 < keys.size() && time > keys[i+1].time) ++i;
+
+    float t0 = keys[i].time;
+    float t1 = keys[i+1].time;
+    float factor = (time - t0) / (t1 - t0);
+    return glm::mix(keys[i].value, keys[i+1].value, factor);
 }
 
-glm::quat AnimatorComponent::InterpolateRotation(const std::vector<Animation::Keyframe>& keys, float time) {
-    if (keys.empty()) return glm::quat();
-    if (keys.size() == 1) return keys[0].rotation;
+glm::quat AnimatorComponent::InterpolateRotation(const std::vector<Animation::KeyRotation>& keys, float time) {
+    if (keys.empty()) return glm::quat(1,0,0,0);
+    if (keys.size() == 1) return keys[0].value;
 
-    size_t index = 0;
-    for (size_t i = 0; i + 1 < keys.size(); ++i) {
-        if (time < keys[i+1].time) {
-            index = i;
-            break;
-        }
-    }
-    const auto& keyA = keys[index];
-    const auto& keyB = keys[std::min(index + 1, keys.size()-1)];
-    float dt = keyB.time - keyA.time;
-    float factor = dt > 0.0f ? (time - keyA.time) / dt : 0.0f;
-    return glm::slerp(keyA.rotation, keyB.rotation, factor);
+    uint32_t i = 0;
+    while (i + 1 < keys.size() && time > keys[i+1].time) ++i;
+
+    float t0 = keys[i].time;
+    float t1 = keys[i+1].time;
+    float factor = (time - t0) / (t1 - t0);
+    return glm::slerp(keys[i].value, keys[i+1].value, factor);
 }
 
-glm::vec3 AnimatorComponent::InterpolateScale(const std::vector<Animation::Keyframe>& keys, float time) {
+glm::vec3 AnimatorComponent::InterpolateScale(const std::vector<Animation::KeyScale>& keys, float time) {
     if (keys.empty()) return glm::vec3(1.0f);
-    if (keys.size() == 1) return keys[0].scale;
+    if (keys.size() == 1) return keys[0].value;
 
-    size_t index = 0;
-    for (size_t i = 0; i + 1 < keys.size(); ++i) {
-        if (time < keys[i+1].time) {
-            index = i;
-            break;
-        }
-    }
-    const auto& keyA = keys[index];
-    const auto& keyB = keys[std::min(index + 1, keys.size()-1)];
-    float dt = keyB.time - keyA.time;
-    float factor = dt > 0.0f ? (time - keyA.time) / dt : 0.0f;
-    return glm::mix(keyA.scale, keyB.scale, factor);
+    uint32_t i = 0;
+    while (i + 1 < keys.size() && time > keys[i+1].time) ++i;
+
+    float t0 = keys[i].time;
+    float t1 = keys[i+1].time;
+    float factor = (time - t0) / (t1 - t0);
+    return glm::mix(keys[i].value, keys[i+1].value, factor);
 }
 
 // Recursive processing of bones
 void AnimatorComponent::ProcessBoneRecursive(const std::string& boneName, const glm::mat4& parentTransform, float timeInTicks) {
-    // 1) 로컬 트랜스폼
-    //glm::mat4 local(1.0f);
-    glm::mat4 local = m_owner->GetComponent<TransformComponent>()->GetTransformMatrix();
-    const auto& anim     = m_animations[m_currentAnimationIndex];
-    const auto& boneAnims= anim->GetBoneAnimations();
-    auto itBA = boneAnims.find(boneName);
-    if (itBA != boneAnims.end() && !itBA->second.keyframes.empty()) {
-        const auto& ka = itBA->second.keyframes;
-        local = glm::translate(glm::mat4(1.0f), InterpolatePosition(ka, timeInTicks))
-            * glm::mat4_cast( InterpolateRotation(ka, timeInTicks))
-            * glm::scale(glm::mat4(1.0f), InterpolateScale(ka, timeInTicks));
-    } else {
+    // 1) 본의 로컬 트랜스폼 결정
+    //    - 애니메이션 채널이 있으면 animLocal  
+    //    - 없으면 바인드 포즈 local
+    glm::mat4 local;
+    auto& baMap = m_animations[m_currentAnimationIndex]->GetBoneAnimations();
+    auto it     = baMap.find(boneName);
+    if (it != baMap.end()) {
+        const auto& ba = it->second;
+        glm::vec3 pos = InterpolatePosition(ba.positions, timeInTicks);
+        glm::quat rot = InterpolateRotation(ba.rotations, timeInTicks);
+        glm::vec3 scl = InterpolateScale(ba.scales, timeInTicks);
+        local = glm::translate(glm::mat4(1.0f), pos)
+              * glm::mat4_cast(rot)
+              * glm::scale(glm::mat4(1.0f), scl);
+    }
+    else {
+        // 애니메이션 키가 없는 본은 바인드 포즈의 로컬 트랜스폼
         local = m_skeleton->GetNodeDefaultTransform(boneName);
     }
 
     // 2) 글로벌 트랜스폼
     glm::mat4 global = parentTransform * local;
 
-    // 3) 스킨 매트릭스
-    const auto& boneInfoMap = m_skeleton->GetBoneInfoMap();
-    auto itInfo = boneInfoMap.find(boneName);
-    if (itInfo != boneInfoMap.end()) {
-        int idx = itInfo->second.index;
-        if (idx >= 0 && idx < (int)m_boneMatrices.size())
-            m_boneMatrices[idx] = global * itInfo->second.offsetMatrix;
+    // 3) 스킨 매트릭스 업데이트 (애니메이션이 있는 본만 덮어씀)
+    auto const& boneInfoMap = m_skeleton->GetBoneInfoMap();
+    if (auto infoIt = boneInfoMap.find(boneName); infoIt != boneInfoMap.end()) {
+        int idx = infoIt->second.index;
+        // offsetMatrix = inverse bind-pose
+        m_boneMatrices[idx] = global * infoIt->second.offsetMatrix;
     }
 
-    // 4) 자식 순회
-    static const std::vector<std::string> empty;
-    const auto& hier = m_skeleton->GetBoneHierarchy();
-    auto itCh = hier.find(boneName);
-    const auto& children = (itCh != hier.end()) ? itCh->second : empty;
-    for (auto& cn : children) {
-        ProcessBoneRecursive(cn, global, timeInTicks);
+    // 4) 자식 순회 (범위 검사)
+    auto const& hier = m_skeleton->GetBoneHierarchy();
+    if (auto chIt = hier.find(boneName); chIt != hier.end()) {
+        for (auto const& child : chIt->second) {
+            ProcessBoneRecursive(child, global, timeInTicks);
+        }
     }
 }
 
 void AnimatorComponent::Update(float deltaTime) {
     if (m_animations.empty()) return;
 
-    auto& anim = m_animations[m_currentAnimationIndex];
+    std::fill(m_boneMatrices.begin(), m_boneMatrices.end(), glm::mat4(1.0f));
 
-    m_currentTime += deltaTime * anim->GetTicksPerSecond();
+    m_boneMatrices = m_skeleton->GetBindPoseMatrices();
+
+    // 2) 애니메이션 시간 누적
+    auto& anim = m_animations[m_currentAnimationIndex];
+    float tps = anim->GetTicksPerSecond() > 0 
+                ? anim->GetTicksPerSecond() 
+                : 25.0f;
+    m_currentTime += deltaTime * tps;
     float timeInTicks = fmod(m_currentTime, anim->GetDuration());
 
-    const std::string& root = m_skeleton->GetRootBoneName();
-    glm::mat4 rootBind = m_skeleton->GetNodeDefaultTransform(root);
-    auto transform = m_owner->GetComponent<TransformComponent>();
-    glm::vec3 pos = transform->GetPosition();
-    glm::vec3 rot = transform->GetRotation(); // ← radians
-    glm::vec3 scale = transform->GetScale();
+    // 3) 루트 바인드와 글로벌 역변환 준비
+    const std::string& rootName = m_skeleton->GetRootBoneName();
+    glm::mat4 rootDefault = m_skeleton->GetNodeDefaultTransform(rootName);
 
-    rootBind = glm::translate(rootBind, pos);
-    rootBind = glm::rotate(rootBind, rot.x, glm::vec3(1, 0, 0));
-    rootBind = glm::rotate(rootBind, rot.y, glm::vec3(0, 1, 0));
-    rootBind = glm::rotate(rootBind, rot.z, glm::vec3(0, 0, 1));
-    //rootBind = glm::scale(rootBind, scale);
-    ProcessBoneRecursive(root, rootBind, timeInTicks);
+    // globalInverseTransform은 초기화 시 미리 계산해 두었다고 가정
+     m_globalInverseTransform = inverse(rootDefault);
+
+    // 루트의 월드 변환: 위치/회전/스케일 적용
+    glm::mat4 rootBind = rootDefault;
+    auto transformCmp = m_owner->GetComponent<TransformComponent>();
+    rootBind = glm::translate(rootBind, transformCmp->GetPosition());
+    rootBind = glm::translate(rootBind, glm::vec3(0, 100.0f, 0));
+    rootBind = glm::rotate   (rootBind, transformCmp->GetRotation().x, {1,0,0});
+    rootBind = glm::rotate   (rootBind, transformCmp->GetRotation().y, {0,1,0});
+    rootBind = glm::rotate   (rootBind, transformCmp->GetRotation().z, {0,0,1});
+    //rootBind = glm::scale    (rootBind, transformCmp->GetScale());
+
+    // 4) 재귀로 본 변환 계산
+    ProcessBoneRecursive(rootName, rootBind, timeInTicks);
 }

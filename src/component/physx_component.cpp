@@ -45,6 +45,8 @@ void PhysXComponent::Init() {
         m_actor = PxCreateStatic(*Physics::GetSDK(), physxTransform, geometry, *material);
     }
 
+    m_actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true); 
+
     Physics::GetScene()->addActor(*m_actor);
 }
 
