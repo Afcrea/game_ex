@@ -79,10 +79,18 @@ void AnimatorComponent::ProcessBoneRecursive(const std::string& boneName, const 
     auto& baMap = m_animations[m_currentAnimationIndex]->GetBoneAnimations();
     auto it     = baMap.find(boneName);
     if (it != baMap.end()) {
+        auto rootBoneName = m_skeleton->GetRootBoneName();
+
         const auto& ba = it->second;
         glm::vec3 pos = InterpolatePosition(ba.positions, timeInTicks);
         glm::quat rot = InterpolateRotation(ba.rotations, timeInTicks);
         glm::vec3 scl = InterpolateScale(ba.scales, timeInTicks);
+
+        if(rootBoneName == boneName) {
+            // 루트 본은 월드 좌표계에서 변환
+            pos = m_globalInverseTransform * glm::vec4(0.0f,0.0f,0.0f, 1.0f);
+        }
+
         local = glm::translate(glm::mat4(1.0f), pos)
               * glm::mat4_cast(rot)
               * glm::scale(glm::mat4(1.0f), scl);
@@ -132,7 +140,7 @@ void AnimatorComponent::Update(float deltaTime) {
     glm::mat4 rootDefault = m_skeleton->GetNodeDefaultTransform(rootName);
 
     // globalInverseTransform은 초기화 시 미리 계산해 두었다고 가정
-     m_globalInverseTransform = inverse(rootDefault);
+    m_globalInverseTransform = inverse(rootDefault);
 
     // 루트의 월드 변환: 위치/회전/스케일 적용
     glm::mat4 rootBind = rootDefault;

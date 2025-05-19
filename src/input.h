@@ -8,6 +8,15 @@ enum class eKeyState
 	None,
 };
 
+enum class eMouseState
+{
+	Down,
+	Pressed,
+	Up,
+	None,
+};
+
+
 constexpr int32_t AllKeyCodes[] = {
     GLFW_KEY_Q,
     GLFW_KEY_W,
@@ -81,6 +90,14 @@ constexpr int32_t AllKeyCodes[] = {
     GLFW_KEY_F12,
 };
 
+constexpr int32_t AllMouseButtonCodes[] = {
+    GLFW_MOUSE_BUTTON_LEFT,
+    GLFW_MOUSE_BUTTON_RIGHT,
+    GLFW_MOUSE_BUTTON_MIDDLE,
+    GLFW_MOUSE_BUTTON_4,
+    GLFW_MOUSE_BUTTON_5,
+};
+
 #define class_ptr(Input)
 class Input {
 public:
@@ -91,12 +108,32 @@ public:
         bool bPressed;
     };
 
+    struct MouseButton {
+        int32_t      button;
+        eMouseState  state;
+        bool         bPressed;
+    };
+
     static void Initailize();
     static void Update(GLFWwindow* mWindow);
 
     static bool GetKeyDown(eKeyCode code) { return Keys[static_cast<int>(code)].state == eKeyState::Down; }
     static bool GetKeyUp(eKeyCode code) { return Keys[static_cast<int>(code)].state == eKeyState::Up; }
     static bool GetKey(eKeyCode code) { return Keys[static_cast<int>(code)].state == eKeyState::Pressed; }
+
+    // ──────────── 마우스 버튼 조회 ────────────
+    static bool GetMouseButtonDown(eMouseButtonCode btn) { return MouseButtons[static_cast<int>(btn)].state == eMouseState::Down; }
+    static bool GetMouseButton(eMouseButtonCode btn)     { return MouseButtons[static_cast<int>(btn)].state == eMouseState::Pressed; }
+    static bool GetMouseButtonUp(eMouseButtonCode btn)   { return MouseButtons[static_cast<int>(btn)].state == eMouseState::Up; }
+
+    // ──────────── 커서 위치 & 스크롤 오프셋 조회 ────────────
+    static glm::vec2 GetMousePosition() { return mousePosition; }
+    // 반환과 동시에 내부 값을 (0,0)으로 리셋
+    static glm::vec2 GetScrollOffset()  { auto off = scrollOffset; scrollOffset = glm::vec2(0.0f); return off; }
+
+    // GLFW 스크롤 콜백
+    static void scrollCallback(GLFWwindow* mWindow, double xoffset, double yoffset);
+    static void mousePositionCallback(GLFWwindow* mWindow, double xpos, double ypos);
 
 private:
     static void createKeys();
@@ -106,5 +143,16 @@ private:
     static void updateKeyDown(Input::Key& key);
     static void updateKeyUp(Input::Key& key);
 
+    // ──────────── 마우스 내부 처리 ────────────
+    static void createMouseButtons();
+    static void updateMouseButtons(GLFWwindow* mWindow);
+    static void updateMouseButton(GLFWwindow* mWindow, MouseButton& mb);
+    static bool isMouseButtonDown(GLFWwindow* mWindow, int32_t button);
+    static void updateMouseButtonDown(MouseButton& mb);
+    static void updateMouseButtonUp(MouseButton& mb);
+
     static std::vector<Key> Keys;
+    static std::vector<MouseButton> MouseButtons;
+    static glm::vec2                mousePosition;
+    static glm::vec2                scrollOffset;
 };

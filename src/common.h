@@ -94,5 +94,17 @@ enum class eKeyCode
     F12,
 };
 
+enum class eMouseButtonCode
+{
+    Left,
+    Right,
+    Middle,
+    Button1,
+    Button2,
+    Button3,
+    Button4,
+    Button5,
+};
+
 std::optional<std::string> LoadTextFile(const std::string& filename);
 glm::vec3 GetAttenuationCoeff(float distance);

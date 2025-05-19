@@ -23,7 +23,11 @@ void PlayerComponent::Update(float dt) {
     PxVec3 currentVelocity = actor->getLinearVelocity();
 
     PxVec3 desiredVelocity = PxVec3(0.0f, 0.0f, 0.0f); // 기본적으로 유지
-    const float moveSpeed = 5.0f;
+    float moveSpeed = 5.0f;
+
+    if(Input::GetKey(eKeyCode::ShiftLeft)) {
+        moveSpeed = 20.0f;
+    }
 
     if (Input::GetKey(eKeyCode::W)) {
         desiredVelocity.x = moveSpeed;
@@ -48,7 +52,11 @@ void PlayerComponent::Update(float dt) {
         transform->SetRotation(transform->GetRotation() + glm::vec3(0.0f, 0.01f, 0.0f));
     }
 
-    if(Input::GetKey(eKeyCode::E)) {
+    if( (desiredVelocity.x != 0.0f || desiredVelocity.z != 0.0f) && moveSpeed < 10.0f) {
+        auto animator = m_owner->GetComponent<AnimatorComponent>();
+        animator->SetCurrentAnimation(2);
+    }
+    else if( (desiredVelocity.x != 0.0f || desiredVelocity.z != 0.0f) && moveSpeed > 10.0f) {
         auto animator = m_owner->GetComponent<AnimatorComponent>();
         animator->SetCurrentAnimation(1);
     }
@@ -56,7 +64,6 @@ void PlayerComponent::Update(float dt) {
         auto animator = m_owner->GetComponent<AnimatorComponent>();
         animator->SetCurrentAnimation(0);
     }
-    //SPDLOG_INFO("PlayerComponent::Update: position: {}", transform->GetPosition());
 }
 
 void PlayerComponent::OnTriggerEnter(GameObject* other) {
@@ -66,6 +73,33 @@ void PlayerComponent::OnTriggerEnter(GameObject* other) {
 }
 
 void PlayerComponent::Render(CameraPtr camera) {
+
     auto transform = GetOwner()->GetComponent<TransformComponent>();
-    camera->SetTarget(transform->GetPosition());
+
+    glm::vec3 targetPos = transform->GetPosition();
+
+    glm::vec3 scale = transform->GetScale();
+
+    glm::vec3 rotation = transform->GetRotation();
+
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), targetPos);
+
+    model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+    model = glm::scale(model, scale);
+
+    glm::vec4 localPos = glm::vec4(targetPos, 1.0f);
+    glm::vec4 worldPos = model * localPos;
+
+    glm::vec3 playerPos = targetPos;
+    glm::quat rot       = transform->GetRotation();
+    glm::vec3 forward   = rot * glm::vec3(0.0f, 0.0f, 1.0f);
+
+    camera->Follow(
+        glm::vec3(worldPos.x, worldPos.y, worldPos.z),
+        forward,
+        50.0f,
+        30.0f
+    );
 }

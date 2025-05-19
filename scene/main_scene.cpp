@@ -12,6 +12,11 @@
 
 void MainScene::Init() {
     Physics::Initialize();
+
+    #if defined(NDEBUG)
+        glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    #endif
     // 초기화
     auto player = Player::Create();
     gameObjects.push_back(GameObjectPtr(std::move(player)));
@@ -23,7 +28,7 @@ void MainScene::Init() {
     gameObjects.push_back(GameObjectPtr(std::move(ground)));
 
     m_camera = Camera::Create();
-    m_camera->Configure(45.0f, (float)m_width / (float)m_height, 0.1f, 100.0f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    m_camera->Configure(45.0f, (float)m_width / (float)m_height, 0.1f, 1000.0f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void MainScene::Update(float deltaTime) {
@@ -46,10 +51,13 @@ void MainScene::Render() {
     glEnable(GL_BLEND);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
-    
+
+    m_camera->SetView();
+
     for(auto gameObject : gameObjects) {
         gameObject->Render(m_camera);
     }
+    
 }
 
 void MainScene::Shutdown() {

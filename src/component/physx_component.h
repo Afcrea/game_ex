@@ -30,4 +30,3 @@ private:
 
     PxRigidActor* m_actor = nullptr;
 };
-    

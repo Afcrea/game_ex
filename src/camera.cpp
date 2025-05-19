@@ -12,7 +12,7 @@ void Camera::Configure(float fov, float aspect, float zNear, float zFar, const g
                         glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
     m_right = glm::normalize(glm::cross(m_front, up));
     m_up = glm::cross(m_right, m_front);
-    m_target = position + m_front;
+    SetTarget(m_position + m_front);
     m_viewMatrix = glm::lookAt(m_position, m_target, m_up);
 }
 
@@ -22,23 +22,11 @@ void Camera::SetPerspective(float fov, float aspect, float zNear, float zFar) {
 }
 
 void Camera::SetView() {
-    m_viewMatrix = glm::lookAt(m_position, m_position + m_front, m_up);
+    m_viewMatrix = glm::lookAt(m_position, m_target, m_up);
 }
 
 void Camera::SetTarget(const glm::vec3& target) {
     m_target = target;
-
-    glm::vec3 direction = glm::normalize(m_target - m_position);
-
-    glm::vec3 offset = glm::vec3(-45.0f, 60.0f, 0.0f); // 이 오프셋은 좌표계에 따라 조절
-    SetPosition(target + offset);
-
-    // pitch = 위/아래 각도, yaw = 좌/우 각도
-    m_pitch = glm::degrees(asin(direction.y));                         // y축 → pitch
-    m_yaw = glm::degrees(atan2(direction.z, direction.x));            // xz 평면 → yaw
-
-    // front 벡터 재계산 (선택)
-    m_front = glm::normalize(direction);
 }
 
 void Camera::SetPosition(const glm::vec3& position) {
@@ -67,4 +55,26 @@ void Camera::Rotate(float pitch, float yaw) {
     m_right = glm::normalize(glm::cross(m_front, glm::vec3(0.0f, 1.0f, 0.0f)));
     m_up = glm::cross(m_right, m_front);
     SetView();
+}
+
+void Camera::Follow(
+    const glm::vec3& targetPos,
+    const glm::vec3& targetFwd,
+    float distance,
+    float height
+) {
+    SetTarget(targetPos);
+    // 1) 전방 벡터 평면 투영 및 정규화
+    glm::vec3 flatFwd = glm::normalize(glm::vec3(targetFwd.x, 0.0f, targetFwd.z));
+    if (glm::length(flatFwd) < 0.001f)
+        flatFwd = glm::vec3(0.0f, 0.0f, -1.0f);
+
+    // 2) 카메라 위치 계산: 뒤로 distance 만큼, 위로 height 만큼
+    m_position = targetPos - flatFwd * distance + glm::vec3(0.0f, height, 0.0f);
+
+    // 3) 앞(front), 오른쪽(right), 위(up) 벡터 갱신
+    m_front = glm::normalize(targetPos - m_position);
+    glm::vec3 worldUp(0.0f, 1.0f, 0.0f);
+    m_right = glm::normalize(glm::cross(m_front, worldUp));
+    m_up    = glm::cross(m_right, m_front);
 }

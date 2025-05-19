@@ -11,9 +11,12 @@ void LobbyScene::Init() {
 }
 
 void LobbyScene::Update(float deltaTime) {
-    if(Input::GetKey(eKeyCode::A)) {
-        SPDLOG_INFO("A 눌림");
-    }
+    // if(Input::GetKey(eKeyCode::A)) {
+    //     SPDLOG_INFO("A 눌림");
+    // }
+    // if(Input::GetMouseButton(eMouseButtonCode::Left)) {
+    //     SPDLOG_INFO("마우스 왼쪽 버튼 눌림");
+    // }
     // 게임 로직 업데이트
 }
 

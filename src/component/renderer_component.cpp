@@ -20,19 +20,61 @@ void RendererComponent::Configure(ShaderPtr fs, ShaderPtr vs) {
 }
 
 void RendererComponent::Render(CameraPtr camera) {
-    auto projection = camera->GetProjectionMatrix();
-    auto view = camera->GetViewMatrix();
-    glm::vec3 viewPos = camera->GetPosition();
+    glm::vec3 targetPos = camera->GetTarget();
 
     glm::vec3 position = m_owner->GetComponent<TransformComponent>()->GetPosition();
+
+    auto projection = camera->GetProjectionMatrix();
+    auto view = camera->GetViewMatrix();
+
+    glm::vec3 viewPos = camera->GetPosition();
+    
     glm::vec3 scale = m_owner->GetComponent<TransformComponent>()->GetScale();
 
     glm::vec3 rotation = m_owner->GetComponent<TransformComponent>()->GetRotation();
-
+    
+    // if(m_owner->GetName() != "Player") {
+    //     position = position - targetPos;
+    // }
     glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
+
+
+    // if(m_owner->GetName() == "Player") {
+    //     model = glm::mat4(1.0f);   
+    // }    
+    
+    model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
     model = glm::scale(model, scale);
 
     glm::mat4 transform = projection * view * model;
+
+    glm::vec4 localPos = glm::vec4(position, 1.0f);
+    glm::vec4 worldPos = model * localPos;
+
+    //glm::vec4 worldPos = model * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    glm::vec4 clipLocal = projection * view * localPos;
+    glm::vec3 ndcLocal  = glm::vec3(clipLocal) / clipLocal.w;
+
+    glm::vec4 clipWorld = projection * view * worldPos;
+    glm::vec3 ndcWorld  = glm::vec3(clipWorld) / clipWorld.w;
+
+    std::string name = m_owner->GetName();
+
+    if(name == "Player") {
+        // NDC 연산 Debug
+        // SPDLOG_INFO("position = ({:.2f},{:.2f},{:.2f}), worldPos = ({:.2f},{:.2f},{:.2f}), localPos = ({:.2f},{:.2f},{:.2f}), viewPos = ({:.2f},{:.2f},{:.2f})",
+        //     position.x, position.y, position.z,
+        //     worldPos.x, worldPos.y, worldPos.z,
+        //     localPos.x, localPos.y, localPos.z,
+        //     viewPos.x, viewPos.y, viewPos.z);
+        // SPDLOG_INFO("localPos NDC = ({:.2f},{:.2f}), worldPos NDC = ({:.2f},{:.2f})",
+        //     ndcLocal.x, ndcLocal.y, ndcWorld.x, ndcWorld.y);
+    }
+
+    //SPDLOG_INFO("{}'s NDC: ({:.2f}, {:.2f}, {:.2f})", name, ndc.x, ndc.y, ndc.z);
 
     glUseProgram(m_program->Get());
 
@@ -68,8 +110,6 @@ void RendererComponent::Render(CameraPtr camera) {
     m_program->SetUniform("light.ambient", light.ambient);
     m_program->SetUniform("light.diffuse", light.diffuse);
     m_program->SetUniform("light.specular", light.specular);
-
-    camera->SetView();
 
     auto animator = m_owner->GetComponent<AnimatorComponent>();
     if (animator) {

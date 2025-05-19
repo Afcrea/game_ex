@@ -16,10 +16,17 @@ public:
     const glm::vec3& GetPosition() const { return m_position; }
     const glm::vec3& GetRight() const { return m_right; }
     const glm::vec3& GetFront() const { return m_front; }
-
+    const glm::vec3& GetTarget() const { return m_target; }
+    
     void Move(const glm::vec3& offset);
     void Rotate(float pitch, float yaw);
 
+    void Follow(
+        const glm::vec3& targetPosition,
+        const glm::vec3& targetForward,
+        float distance = 10.0f,
+        float height   =  5.0f
+    );
 private:
     Camera() = default;
 

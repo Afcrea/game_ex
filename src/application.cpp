@@ -34,6 +34,8 @@ bool Application::Init() {
     
     glfwMakeContextCurrent(mWindow);
     glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
+    glfwSetScrollCallback(mWindow, Input::scrollCallback);
+    glfwSetCursorPosCallback(mWindow, Input::mousePositionCallback);
 
     // glad를 활용한 OpenGL 함수 로딩
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {

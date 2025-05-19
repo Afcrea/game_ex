@@ -190,7 +190,7 @@ void Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
             }
         }
     }
-  
+
     std::vector<uint32_t> indices;
     indices.resize(mesh->mNumFaces * 3);
     for (uint32_t i = 0; i < mesh->mNumFaces; i++) {

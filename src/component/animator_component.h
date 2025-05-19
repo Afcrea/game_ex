@@ -14,6 +14,8 @@ public:
     void Configure(const std::string& filename);
     void SetCurrentAnimation(int index) { m_currentAnimationIndex = index; }
     const std::vector<glm::mat4>& GetBoneMatrices() { return m_boneMatrices; }
+    const std::string& GetSkeletonRootName() { return m_skeletonRootName; }
+    const AnimationPtr& GetCurrentAnimation() { return m_animations[m_currentAnimationIndex]; }
     
     void Update(float deltaTime) override;
 private:

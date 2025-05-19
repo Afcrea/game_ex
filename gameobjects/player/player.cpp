@@ -36,6 +36,7 @@ void Player::Init() {
     auto animator = AddComponent<AnimatorComponent>();
     animator->Configure("Resource/playerModel/Idle.fbx");
     animator->Configure("Resource/playerModel/Fast_Run.fbx");
+    animator->Configure("Resource/playerModel/Walking.fbx");
 
     for (const auto& [type, component] : m_components) {
         if (component) {
