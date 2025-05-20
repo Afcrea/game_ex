@@ -3,6 +3,7 @@
 #include "component/transform_component.h"
 #include "component/physx_component.h"
 #include "component/linerenderer_component.h"
+#include "component/backpack_component.h"
 
 Backpack::~Backpack() {
     Shutdown();
@@ -31,6 +32,7 @@ void Backpack::Init() {
     physics->Configure(false, 1.0f, 1.0f);
     physics->SetTrigger(true);
     auto lineRenderer = AddComponent<LineRendererComponent>();
+    auto backpack = AddComponent<BackPackComponent>();
 
     for (const auto& [type, component] : m_components) {
         if (component) {

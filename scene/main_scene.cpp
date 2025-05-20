@@ -6,6 +6,7 @@
 
 #include "component/renderer_component.h"
 #include "component/transform_component.h"
+#include "component/linerenderer_component.h"
 #include "input.h"
 #include "physics.h"
 
@@ -20,7 +21,7 @@ void MainScene::Init() {
     // 초기화
     auto ground = Ground::Create();
     gameObjects.push_back(GameObjectPtr(std::move(ground)));
-    
+
     auto player = Player::Create();
     gameObjects.push_back(GameObjectPtr(std::move(player)));
 
@@ -56,6 +57,11 @@ void MainScene::Render() {
 
     for(auto gameObject : gameObjects) {
         gameObject->Render(m_camera);
+    }
+
+
+    for(auto gameObject : gameObjects) {
+        gameObject->GetComponent<LineRendererComponent>()->Render(m_camera);
     }
     
 }

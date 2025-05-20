@@ -61,15 +61,6 @@ void PlayerComponent::Update(float dt) {
         auto animator = m_owner->GetComponent<AnimatorComponent>();
         animator->SetCurrentAnimation(0);
     }
-    
-    GameObject* hitObj = nullptr;
-    if(m_owner->GetComponent<PhysXComponent>()->RaycastFront(10000.0f, hitObj)) {
-        if(hitObj->GetName() == "Backpack") {
-            SPDLOG_INFO("앞에 '{}' 객체를 감지했습니다.", hitObj->GetName());
-        }
-        SPDLOG_INFO("앞에 '{}' 객체를 감지했습니다.", hitObj->GetName());
-        
-    }
 }
 
 void PlayerComponent::OnTriggerEnter(GameObject* other) {

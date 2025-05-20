@@ -45,7 +45,7 @@ void PhysXComponent::Init() {
     auto transform = m_owner->GetComponent<TransformComponent>();
     if (!transform) return;
 
-    auto position = transform->GetPosition();
+    glm::vec3 position = transform->GetPosition();
     glm::vec3 scale = transform->GetScale();
 
     glm::mat4 model = transform->GetTransformMatrix();
@@ -159,8 +159,6 @@ void PhysXComponent::Update(float dt) {
             lines.push_back(worldCorners[e[1]]);
         }
     }
-
-    
 
     // LineRendererComponent에 전달
     if (auto lineComp = m_owner->GetComponent<LineRendererComponent>()) {

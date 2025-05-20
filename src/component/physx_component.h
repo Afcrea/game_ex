@@ -33,32 +33,3 @@ private:
 
     PxRigidActor* m_actor = nullptr;
 };
-
-// PhysXComponent.h 또는 cpp 상단에 추가
-struct IgnoreSelfFilter : public physx::PxQueryFilterCallback {
-    physx::PxRigidActor* selfActor;
-    IgnoreSelfFilter(physx::PxRigidActor* actor)
-    : selfActor(actor) {}
-
-    // 1) 사전 필터: 자기 자신은 eNONE로 무시, 나머지는 블록
-    virtual physx::PxQueryHitType::Enum preFilter(
-        const physx::PxFilterData& filterData,
-        const physx::PxShape* shape,
-        const physx::PxRigidActor* actor,
-        physx::PxHitFlags& queryFlags) override
-    {
-        if (actor == selfActor)
-            return physx::PxQueryHitType::eNONE;   // 이 액터 건너뛰기
-        return physx::PxQueryHitType::eBLOCK;      // 첫 충돌 지점에서 멈춤
-    }
-
-    // 2) 후처리 필터: 기본적으로 블록
-    virtual physx::PxQueryHitType::Enum postFilter(
-        const physx::PxFilterData& filterData,
-        const physx::PxQueryHit& hit,
-        const physx::PxShape* shape,
-        const physx::PxRigidActor* actor) override
-    {
-        return physx::PxQueryHitType::eBLOCK;
-    }
-};
