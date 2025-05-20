@@ -3,6 +3,7 @@
 #include "component/transform_component.h"
 #include "component/player_component.h"
 #include "component/physx_component.h"
+#include "component/linerenderer_component.h"
 
 GroundUPtr Ground::Create() {
     auto ground = GroundUPtr(new Ground());
@@ -27,8 +28,9 @@ void Ground::Init() {
     transform->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     transform->SetScale(glm::vec3(100.0f, 1.0f, 100.0f));
     auto physics = AddComponent<PhysXComponent>();
-    physics->Configure(false, 10.0f);
+    physics->Configure(false, 10.0f, 0.02f);
     physics->Configure(1.0f, 1.0f, 0.0f);
+    auto lineRenderer = AddComponent<LineRendererComponent>();
 
     for (const auto& [type, component] : m_components) {
         if (component) {

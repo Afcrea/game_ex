@@ -2,6 +2,7 @@
 #include "component/renderer_component.h"
 #include "component/transform_component.h"
 #include "component/physx_component.h"
+#include "component/linerenderer_component.h"
 
 Backpack::~Backpack() {
     Shutdown();
@@ -24,11 +25,12 @@ void Backpack::Init() {
     renderer->Configure("Resource/backpackModel/backpack.obj");
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
-    transform->SetPosition(glm::vec3(0.0f, 5.0f, 0.0f));
-    transform->SetScale(glm::vec3(2.0f, 2.1f, 2.1f));
+    transform->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
+    transform->SetScale(glm::vec3(5.0f, 5.0f, 5.0f));
     auto physics = AddComponent<PhysXComponent>();
-    physics->Configure(false, 1.0f);
+    physics->Configure(false, 1.0f, 1.0f);
     physics->SetTrigger(true);
+    auto lineRenderer = AddComponent<LineRendererComponent>();
 
     for (const auto& [type, component] : m_components) {
         if (component) {

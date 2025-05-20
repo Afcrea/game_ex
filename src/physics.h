@@ -1,6 +1,8 @@
 #pragma once
 #include <PxPhysicsAPI.h>
-
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 using namespace physx;
 
 class Physics {

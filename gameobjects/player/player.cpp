@@ -4,6 +4,7 @@
 #include "component/player_component.h"
 #include "component/physx_component.h"
 #include "component/animator_component.h"
+#include "component/linerenderer_component.h"
 
 Player::~Player() {
     Shutdown();
@@ -31,12 +32,14 @@ void Player::Init() {
     transform->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
     auto player = AddComponent<PlayerComponent>();
     auto physics = AddComponent<PhysXComponent>();
-    physics->Configure(true, 10.0f);
+    physics->Configure(true, 10.0f, 4.0f);
     physics->Configure(1.0f, 1.0f, 0.0f);
     auto animator = AddComponent<AnimatorComponent>();
     animator->Configure("Resource/playerModel/Idle.fbx");
     animator->Configure("Resource/playerModel/Fast_Run.fbx");
     animator->Configure("Resource/playerModel/Walking.fbx");
+    auto lineRenderer = AddComponent<LineRendererComponent>();
+
 
     for (const auto& [type, component] : m_components) {
         if (component) {

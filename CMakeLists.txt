@@ -27,6 +27,7 @@ add_executable(${PROJECT_NAME}
     src/component/player_component.h src/component/player_component.cpp
     src/component/physx_component.h src/component/physx_component.cpp
     src/component/animator_component.h src/component/animator_component.cpp
+    src/component/linerenderer_component.h src/component/linerenderer_component.cpp
     
     scene/scene.h scene/scene_manager.h scene/scene_manager.cpp
     scene/lobby_scene.h scene/lobby_scene.cpp

@@ -1,9 +1,6 @@
 #include "mesh.h"
 
-void Mesh::Init(
-    const std::vector<Vertex>& vertices,
-    const std::vector<uint32_t>& indices,
-    uint32_t primitiveType) {
+void Mesh::Init(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, uint32_t primitiveType) {
     m_vertexLayout = VertexLayout::Create();
     m_vertexBuffer = Buffer::CreateWithData(GL_ARRAY_BUFFER, GL_STATIC_DRAW, vertices.data(), sizeof(Vertex), vertices.size());
     m_indexBuffer = Buffer::CreateWithData(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, indices.data(), sizeof(uint32_t), indices.size());
@@ -17,10 +14,7 @@ void Mesh::Init(
     m_vertexLayout->SetAttrib(4, 4, GL_FLOAT, false, sizeof(Vertex), offsetof(Vertex, weights));
 }
 
-MeshUPtr Mesh::Create(
-    const std::vector<Vertex>& vertices,
-    const std::vector<uint32_t>& indices,
-    uint32_t primitiveType) {
+MeshUPtr Mesh::Create( const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, uint32_t primitiveType) {
     auto mesh = MeshUPtr(new Mesh());
     mesh->Init(vertices, indices, primitiveType);
     return std::move(mesh);

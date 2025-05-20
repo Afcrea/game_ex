@@ -27,3 +27,13 @@ bool Buffer::Init(uint32_t bufferType, uint32_t usage, const void* data, size_t 
     glBufferData(m_bufferType, m_stride * m_count, data, m_usage);
     return true;
 }
+
+bool Buffer::Update(uint32_t bufferType, uint32_t usage, const void* data, size_t stride, size_t count) {
+    m_bufferType = bufferType;
+    m_usage = usage;
+    m_stride = stride;
+    m_count = count;
+    Bind();
+    glBufferData(m_bufferType, m_stride * m_count, data, m_usage);
+    return true;
+}

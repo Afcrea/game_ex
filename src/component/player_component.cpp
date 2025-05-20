@@ -30,16 +30,16 @@ void PlayerComponent::Update(float dt) {
     }
 
     if (Input::GetKey(eKeyCode::W)) {
-        desiredVelocity.x = moveSpeed;
+        desiredVelocity.z = moveSpeed;
     }
     if (Input::GetKey(eKeyCode::S)) {
-        desiredVelocity.x = -moveSpeed;
-    }
-    if (Input::GetKey(eKeyCode::A)) {
         desiredVelocity.z = -moveSpeed;
     }
+    if (Input::GetKey(eKeyCode::A)) {
+        desiredVelocity.x = moveSpeed;
+    }
     if (Input::GetKey(eKeyCode::D)) {
-        desiredVelocity.z = moveSpeed;
+        desiredVelocity.x = -moveSpeed;
     }
 
     // y속도는 중력에 의해 계속 변화해야 하므로 유지
@@ -48,21 +48,27 @@ void PlayerComponent::Update(float dt) {
     actor->setLinearVelocity(desiredVelocity);
 
     auto transform = m_owner->GetComponent<TransformComponent>();
-    if (Input::GetKey(eKeyCode::Q)) {
-        transform->SetRotation(transform->GetRotation() + glm::vec3(0.0f, 0.01f, 0.0f));
-    }
 
-    if( (desiredVelocity.x != 0.0f || desiredVelocity.z != 0.0f) && moveSpeed < 10.0f) {
+    if((desiredVelocity.x != 0.0f || desiredVelocity.z != 0.0f) && moveSpeed < 10.0f) {
         auto animator = m_owner->GetComponent<AnimatorComponent>();
         animator->SetCurrentAnimation(2);
     }
-    else if( (desiredVelocity.x != 0.0f || desiredVelocity.z != 0.0f) && moveSpeed > 10.0f) {
+    else if((desiredVelocity.x != 0.0f || desiredVelocity.z != 0.0f) && moveSpeed > 10.0f) {
         auto animator = m_owner->GetComponent<AnimatorComponent>();
         animator->SetCurrentAnimation(1);
     }
     else {
         auto animator = m_owner->GetComponent<AnimatorComponent>();
         animator->SetCurrentAnimation(0);
+    }
+    
+    GameObject* hitObj = nullptr;
+    if(m_owner->GetComponent<PhysXComponent>()->RaycastFront(10000.0f, hitObj)) {
+        if(hitObj->GetName() == "Backpack") {
+            SPDLOG_INFO("앞에 '{}' 객체를 감지했습니다.", hitObj->GetName());
+        }
+        SPDLOG_INFO("앞에 '{}' 객체를 감지했습니다.", hitObj->GetName());
+        
     }
 }
 
@@ -76,25 +82,15 @@ void PlayerComponent::Render(CameraPtr camera) {
 
     auto transform = GetOwner()->GetComponent<TransformComponent>();
 
-    glm::vec3 targetPos = transform->GetPosition();
+    auto targetPos = transform->GetPosition();
 
-    glm::vec3 scale = transform->GetScale();
-
-    glm::vec3 rotation = transform->GetRotation();
-
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), targetPos);
-
-    model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = glm::scale(model, scale);
+    glm::mat4 model = transform->GetTransformMatrix();
 
     glm::vec4 localPos = glm::vec4(targetPos, 1.0f);
     glm::vec4 worldPos = model * localPos;
 
     glm::vec3 playerPos = targetPos;
-    glm::quat rot       = transform->GetRotation();
-    glm::vec3 forward   = rot * glm::vec3(0.0f, 0.0f, 1.0f);
+    glm::vec3 forward   = transform->GetForward();
 
     camera->Follow(
         glm::vec3(worldPos.x, worldPos.y, worldPos.z),

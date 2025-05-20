@@ -18,17 +18,26 @@ void MainScene::Init() {
 
     #endif
     // 초기화
+    auto ground = Ground::Create();
+    gameObjects.push_back(GameObjectPtr(std::move(ground)));
+    
     auto player = Player::Create();
     gameObjects.push_back(GameObjectPtr(std::move(player)));
 
     auto backpack = Backpack::Create();
     gameObjects.push_back(GameObjectPtr(std::move(backpack)));
 
-    auto ground = Ground::Create();
-    gameObjects.push_back(GameObjectPtr(std::move(ground)));
-
     m_camera = Camera::Create();
     m_camera->Configure(45.0f, (float)m_width / (float)m_height, 0.1f, 1000.0f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // OpenGL 상태 초기화
+    glDisable(GL_BLEND);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void MainScene::Update(float deltaTime) {
@@ -42,15 +51,6 @@ void MainScene::Update(float deltaTime) {
 void MainScene::Render() {
     glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // OpenGL 상태 초기화
-    glDisable(GL_BLEND);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
-
-    glEnable(GL_BLEND);
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
 
     m_camera->SetView();
 
