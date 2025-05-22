@@ -5,14 +5,10 @@
 #include "component/physx_component.h"
 #include "component/linerenderer_component.h"
 
-GroundUPtr Ground::Create() {
-    auto ground = GroundUPtr(new Ground());
+GroundPtr Ground::Create() {
+    auto ground = GroundPtr(new Ground());
     ground->Init();
     return std::move(ground);
-}
-
-Ground::~Ground() {
-    Shutdown();
 }
 
 void Ground::Init() {

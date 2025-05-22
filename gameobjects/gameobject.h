@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <typeindex>
 
+class Scene;
+
 CLASS_PTR(GameObject)
 class GameObject {
 public:
@@ -52,7 +54,15 @@ public:
     const std::unordered_map<std::type_index, ComponentPtr>& GetAllComponents() const { return m_components; }
     const std::string& GetName() const { return m_name; }
     void SetName(const std::string& name) { m_name = name; }
+    
+    void SetScene(Scene* scene) { m_scene = scene; }
+    Scene* GetScene() const    { return m_scene; }
+
+    void MarkPendingDestroy() { m_pendingDestroy = true; }
+    bool IsPendingDestroy() const { return m_pendingDestroy; }
 protected:
     std::unordered_map<std::type_index, ComponentPtr> m_components;
     std::string m_name;
+    Scene* m_scene = nullptr;
+    bool m_pendingDestroy = false;
 };

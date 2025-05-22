@@ -5,12 +5,8 @@
 #include "component/linerenderer_component.h"
 #include "component/backpack_component.h"
 
-Backpack::~Backpack() {
-    Shutdown();
-}
-
-BackpackUPtr Backpack::Create() {
-    auto backpack = BackpackUPtr(new Backpack());
+BackpackPtr Backpack::Create() {
+    auto backpack = BackpackPtr(new Backpack());
     backpack->Init();
 
     return move(backpack);
@@ -26,7 +22,7 @@ void Backpack::Init() {
     renderer->Configure("Resource/backpackModel/backpack.obj");
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
-    transform->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
+    transform->SetPosition(glm::vec3(5.0f, 2.0f, 0.0f));
     transform->SetScale(glm::vec3(5.0f, 5.0f, 5.0f));
     auto physics = AddComponent<PhysXComponent>();
     physics->Configure(false, 1.0f, 1.0f);

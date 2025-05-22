@@ -34,6 +34,16 @@ void Physics::StepSimulation(float dt) {
     }
 }
 
+void Physics::Simulation(float dt) {
+    if(s_scene) 
+        s_scene->simulate(dt);
+}
+
+void Physics::FetchResults() {
+    if(s_scene)
+        s_scene->fetchResults(true);
+}
+
 void Physics::Shutdown() {
     if (s_material) s_material->release();
     if (s_scene) s_scene->release();
@@ -51,6 +61,7 @@ void ContactListener::onTrigger(PxTriggerPair* pairs, PxU32 count) {
         auto otherObj = static_cast<GameObject*>(otherActor->userData);
 
         if (!triggerObj || !otherObj) continue;
+        if (triggerObj->IsPendingDestroy() || otherObj->IsPendingDestroy()) continue;
 
         for (auto& comp : otherObj->GetAllComponents()) {
             comp.second->OnTriggerEnter(triggerObj);

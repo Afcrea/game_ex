@@ -5,6 +5,10 @@ int main() {
     SPDLOG_INFO("Start");
 
     auto app = Application::Create();
+    if(!app) {
+        SPDLOG_ERROR("application create error");
+        return 0;
+    }
     
     app->run();
 

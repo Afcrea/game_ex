@@ -1,12 +1,12 @@
 #pragma once
 #include "common.h"
-#include "gameobject.h"
 #include "Scene.h"
 #include "program.h"
 #include "buffer.h"
 #include "vertex_layout.h"
 #include "camera.h"
 
+CLASS_PTR(MainScene)
 class MainScene : public Scene {
 public:
     void Init() override;
@@ -18,7 +18,6 @@ public:
     ProgramUPtr boxShaderProgram;
     
 private:
-    std::vector<std::shared_ptr<GameObject>> gameObjects;
     bool m_cameraControl { false };
     glm::vec2 m_prevMousePos { glm::vec2(0.0f) };
 

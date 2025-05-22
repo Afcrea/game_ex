@@ -50,6 +50,7 @@ bool Application::Init() {
     Input::Initailize();
 
     SceneManager::SetScene(std::make_unique<LobbyScene>());
+    //SceneManager::SetScene(new LobbySceneUPtr());
 
     return true;
 }
@@ -78,6 +79,7 @@ ApplicationUPtr Application::Create() {
     
     if(!app->Init()) {
         SPDLOG_ERROR("Application init error !");
+        return nullptr;
     }
     return std::move(app);
 }

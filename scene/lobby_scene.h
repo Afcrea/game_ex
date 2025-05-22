@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "common.h"
 
+CLASS_PTR(LobbyScene)
 class LobbyScene : public Scene {
 public:
     void Init() override;

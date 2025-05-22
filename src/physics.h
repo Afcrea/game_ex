@@ -10,6 +10,8 @@ public:
     static void Initialize();
     static void Shutdown();
     static void StepSimulation(float deltaTime);
+    static void Simulation(float deltaTime);
+    static void FetchResults();
 
     static PxPhysics* GetSDK() { return s_sdk; }
     static PxScene* GetScene() { return s_scene; }

@@ -4,6 +4,7 @@
 #include "animator_component.h"
 #include "input.h"
 #include "gameobject.h"
+#include "Scene.h"
 
 PlayerComponent::~PlayerComponent() {
 }
@@ -66,6 +67,7 @@ void PlayerComponent::Update(float dt) {
 void PlayerComponent::OnTriggerEnter(GameObject* other) {
     if (other->GetName() == "Backpack") {
         SPDLOG_INFO("PlayerComponent::OnTriggerEnter: Coin collected!");
+        m_owner->GetScene()->Destroy(other);
     }
 }
 

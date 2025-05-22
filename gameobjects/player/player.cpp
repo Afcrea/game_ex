@@ -6,12 +6,8 @@
 #include "component/animator_component.h"
 #include "component/linerenderer_component.h"
 
-Player::~Player() {
-    Shutdown();
-}
-
-PlayerUPtr Player::Create() {
-    auto player = PlayerUPtr(new Player());
+PlayerPtr Player::Create() {
+    auto player = PlayerPtr(new Player());
     player->Init();
 
     return move(player);

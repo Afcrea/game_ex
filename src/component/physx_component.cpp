@@ -16,7 +16,6 @@ static glm::mat4 PxTransformToGlmMat4(const physx::PxTransform& t, const glm::ve
 }
 
 PhysXComponent::~PhysXComponent() {
-    Shutdown();
 }
 
 PhysXComponentPtr PhysXComponent::Create() {
@@ -168,7 +167,10 @@ void PhysXComponent::Update(float dt) {
 
 void PhysXComponent::Shutdown() {
     if (m_actor) {
-        SPDLOG_INFO("PhysXComponent::Shutdown() - Destroying actor: {}", m_actor->getConcreteTypeName());
+        if (auto scene = Physics::GetScene())
+            scene->removeActor(*m_actor);
+        m_actor->userData = nullptr;
+        // 2) 이제 안전하게 release()
         m_actor->release();
         m_actor = nullptr;
     }

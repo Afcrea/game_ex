@@ -9,8 +9,8 @@
 CLASS_PTR(Ground)
 class Ground : public GameObject {
 public:
-    static GroundUPtr Create();
-    ~Ground() override;
+    static GroundPtr Create();
+    ~Ground() = default;
 
     void Init() override;
     void Update(float dt) override;

@@ -5,6 +5,7 @@
 #include "animator_component.h"
 #include "input.h"
 #include "gameobject.h"
+#include "Scene.h"
 
 BackPackComponent::~BackPackComponent() {
 }

@@ -19,15 +19,9 @@ void MainScene::Init() {
 
     #endif
     // 초기화
-    auto ground = Ground::Create();
-    gameObjects.push_back(GameObjectPtr(std::move(ground)));
-
-    auto player = Player::Create();
-    gameObjects.push_back(GameObjectPtr(std::move(player)));
-
-    auto backpack = Backpack::Create();
-    gameObjects.push_back(GameObjectPtr(std::move(backpack)));
-
+    auto ground   = Spawn<Ground>();
+    auto player   = Spawn<Player>();
+    auto backpack = Spawn<Backpack>();
     m_camera = Camera::Create();
     m_camera->Configure(45.0f, (float)m_width / (float)m_height, 0.1f, 1000.0f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -42,10 +36,20 @@ void MainScene::Init() {
 }
 
 void MainScene::Update(float deltaTime) {
-    Physics::StepSimulation(deltaTime);
+    Physics::Simulation(deltaTime);
+    Physics::FetchResults();
+
     // 게임 로직 업데이트
-    for(auto gameObject : gameObjects) {
+    for(auto gameObject : m_objects) {
         gameObject->Update(deltaTime);
+    }
+
+    if (!m_pendingRemove.empty()) {
+        for (auto& rem : m_pendingRemove) {
+            rem->Shutdown();  
+            m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), rem), m_objects.end());
+        }
+        m_pendingRemove.clear();
     }
 }
 
@@ -55,12 +59,12 @@ void MainScene::Render() {
 
     m_camera->SetView();
 
-    for(auto gameObject : gameObjects) {
+    for(auto gameObject : m_objects) {
         gameObject->Render(m_camera);
     }
 
 
-    for(auto gameObject : gameObjects) {
+    for(auto gameObject : m_objects) {
         gameObject->GetComponent<LineRendererComponent>()->Render(m_camera);
     }
     
@@ -68,7 +72,7 @@ void MainScene::Render() {
 
 void MainScene::Shutdown() {
     // 리소스 해제
-    for(auto gameObject : gameObjects) {
+    for(auto gameObject : m_objects) {
         gameObject->Shutdown();
     }
     Physics::Shutdown();

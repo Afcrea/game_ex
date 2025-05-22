@@ -8,8 +8,8 @@
 CLASS_PTR(Backpack)
 class Backpack : public GameObject{
 public:
-    ~Backpack();
-    BackpackUPtr static Create();
+    ~Backpack() = default;
+    BackpackPtr static Create();
     void Init() override;
     void Update(float dt) override;
     void Render(CameraPtr camera) override;
