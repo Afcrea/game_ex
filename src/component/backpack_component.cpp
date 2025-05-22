@@ -46,7 +46,6 @@ void BackPackComponent::Update(float dt) {
         // Static은 simulate() 뒤에도 유지되므로, 언제든 setGlobalPose OK
         st->setGlobalPose(newPose);
         transform->SetPosition(newPos);
-        return;
     }
 }
 

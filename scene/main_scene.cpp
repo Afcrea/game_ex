@@ -7,6 +7,7 @@
 #include "component/renderer_component.h"
 #include "component/transform_component.h"
 #include "component/linerenderer_component.h"
+#include "component/physx_component.h"
 #include "input.h"
 #include "physics.h"
 
@@ -19,9 +20,11 @@ void MainScene::Init() {
 
     #endif
     // 초기화
-    auto ground   = Spawn<Ground>();
-    auto player   = Spawn<Player>();
-    auto backpack = Spawn<Backpack>();
+    RequestSpawn<Ground>();
+    RequestSpawn<Player>();
+    RequestSpawn<Backpack>();
+    RequestSpawn<Backpack>();
+
     m_camera = Camera::Create();
     m_camera->Configure(45.0f, (float)m_width / (float)m_height, 0.1f, 1000.0f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -36,6 +39,12 @@ void MainScene::Init() {
 }
 
 void MainScene::Update(float deltaTime) {
+
+    for (auto& req : m_pendingSpawn) {
+        req.fn();  
+    }
+    m_pendingSpawn.clear();
+
     Physics::Simulation(deltaTime);
     Physics::FetchResults();
 
@@ -61,11 +70,6 @@ void MainScene::Render() {
 
     for(auto gameObject : m_objects) {
         gameObject->Render(m_camera);
-    }
-
-
-    for(auto gameObject : m_objects) {
-        gameObject->GetComponent<LineRendererComponent>()->Render(m_camera);
     }
     
 }

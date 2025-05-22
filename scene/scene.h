@@ -14,11 +14,27 @@ public:
     virtual void Render() = 0;
     virtual void Shutdown() = 0;
 
+    struct SpawnRequest {
+        std::function<void()> fn;
+    };
+
+    template<typename T, typename... Args>
+    void RequestSpawn(Args&&... args) {
+        m_pendingSpawn.push_back({
+            [this, tup = std::make_tuple(std::forward<Args>(args)...)]() mutable {
+                // 실제 스폰은 여기서
+                std::apply([this](auto&&... unpacked) {
+                    auto obj = Spawn<T>(std::forward<decltype(unpacked)>(unpacked)...);
+                    // Spawn() 안에서 Init, push_back 모두 처리한다고 가정
+                }, std::move(tup));
+            }
+        });
+    }
+
     template<typename T, typename... Args>
     std::shared_ptr<T> Spawn(Args&&... args) {
         auto obj = T::Create(std::forward<Args>(args)...);
         obj->SetScene(this);
-        obj->Init();
         m_objects.push_back(obj);
         return obj;
     }
@@ -39,4 +55,5 @@ public:
 protected:
     std::vector<GameObjectPtr> m_objects;
     std::vector<GameObjectPtr> m_pendingRemove;
+    std::vector<SpawnRequest> m_pendingSpawn;
 };

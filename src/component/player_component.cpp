@@ -5,6 +5,7 @@
 #include "input.h"
 #include "gameobject.h"
 #include "Scene.h"
+#include "backpack/backpack.h"
 
 PlayerComponent::~PlayerComponent() {
 }
@@ -61,6 +62,11 @@ void PlayerComponent::Update(float dt) {
     else {
         auto animator = m_owner->GetComponent<AnimatorComponent>();
         animator->SetCurrentAnimation(0);
+    }
+
+    if(Input::GetMouseButtonDown(eMouseButtonCode::Left)) {
+        SPDLOG_INFO("누름");
+        GetOwner()->GetScene()->RequestSpawn<Backpack>();
     }
 }
 
