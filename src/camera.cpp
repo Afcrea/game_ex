@@ -18,19 +18,15 @@ void Camera::Configure(float fov, float aspect, float zNear, float zFar, const g
 
 void Camera::SetPerspective(float fov, float aspect, float zNear, float zFar) {
     // glm::perspective 함수 호출 수정
-    m_projectionMatrix = glm::perspective(glm::radians(fov), aspect, zNear, zFar);
+    m_fov = fov;
+    m_aspect = aspect;
+    m_zNear = zNear;
+    m_zFar = zFar;
+    m_projectionMatrix = glm::perspective(glm::radians(m_fov), m_aspect, m_zNear, m_zFar);
 }
 
 void Camera::SetView() {
     m_viewMatrix = glm::lookAt(m_position, m_target, m_up);
-}
-
-void Camera::SetTarget(const glm::vec3& target) {
-    m_target = target;
-}
-
-void Camera::SetPosition(const glm::vec3& position) {
-    m_position = position;
 }
 
 void Camera::Move(const glm::vec3& offset) {

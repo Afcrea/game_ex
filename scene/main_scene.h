@@ -25,4 +25,6 @@ private:
     int m_height {480};
 
     CameraPtr m_camera;
+
+    bool m_paused = false;
 };

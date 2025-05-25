@@ -28,7 +28,7 @@ void LobbyScene::Render() {
 
     buttonX = 200.0f;
     buttonY = 50.0f;
-    buttonS = 50.0f;
+    buttonS = 70.0f;
     buttonPos = glm::vec2((windowWidth / 2.0f) - (buttonX / 2.0f), windowHeight / 2.0f);
 
     Ui_customize::MakeButton("Start", buttonX, buttonY, buttonS, buttonPos, StartGame);

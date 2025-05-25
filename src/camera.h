@@ -7,8 +7,9 @@ public:
     static CameraUPtr Create();
     void SetPerspective(float fov, float aspect, float zNear, float zFar);
     void SetView();
-    void SetPosition(const glm::vec3& position);
-    void SetTarget(const glm::vec3& target);
+    void SetPosition(const glm::vec3& position) { m_position = position; }
+    void SetTarget(const glm::vec3& target) { m_target = target; }
+    void SetAspect(float aspect) { SetPerspective(m_fov, aspect, m_zNear, m_zFar); }
     void Configure(float fov, float aspect, float zNear, float zFar, const glm::vec3& position, const glm::vec3& up);
 
     const glm::mat4& GetViewMatrix() const { return m_viewMatrix; }
@@ -37,6 +38,10 @@ private:
     glm::vec3 m_front { 0.0f, 0.0f, -1.0f };
     glm::vec3 m_up { 0.0f, 1.0f, 0.0f };
     glm::vec3 m_right { 1.0f, 0.0f, 0.0f };
+    float m_fov { 1.0f };
+    float m_aspect { 1.0f };
+    float m_zNear { 0.1f };
+    float m_zFar { 10.0f };
 
     float m_pitch { 0.0f };
     float m_yaw { -90.0f }; // 초기값: -Z 방향

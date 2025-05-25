@@ -36,7 +36,6 @@ void Player::Init() {
     animator->Configure("Resource/playerModel/Walking.fbx");
     auto lineRenderer = AddComponent<LineRendererComponent>();
 
-
     for (const auto& [type, component] : m_components) {
         if (component) {
             component->Init();

@@ -10,7 +10,8 @@
 #include "component/physx_component.h"
 #include "input.h"
 #include "physics.h"
-
+#include "ui_customize.h"
+#include "scene_manager.h"
 
 void MainScene::Init() {
     Physics::Initialize();
@@ -40,6 +41,13 @@ void MainScene::Init() {
 
 void MainScene::Update(float deltaTime) {
 
+    if (Input::GetKeyDown(eKeyCode::Escape)) {
+        m_paused = !m_paused;
+        // ImGui cursor 모드 전환
+        glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, m_paused ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+    }
+    if (m_paused) return;
+
     for (auto& req : m_pendingSpawn) {
         req.fn();  
     }
@@ -63,6 +71,9 @@ void MainScene::Update(float deltaTime) {
 }
 
 void MainScene::Render() {
+    glfwGetWindowSize(glfwGetCurrentContext(), &m_width, &m_height);
+    m_camera->SetAspect((float)m_width / (float)m_height);
+
     glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -70,6 +81,28 @@ void MainScene::Render() {
 
     for(auto gameObject : m_objects) {
         gameObject->Render(m_camera);
+    }
+
+    if (m_paused) {
+    // ImGui 페이즈
+        Ui_customize::MakeFrame();
+        // 화면 중앙에 두 버튼
+        ImVec2 sz(200, 50), pos{ 
+            (ImGui::GetIO().DisplaySize.x - sz.x)/2,
+            (ImGui::GetIO().DisplaySize.y - sz.y)/2
+        };
+        Ui_customize::MakeButton("Resume", sz.x, sz.y, 10, {pos.x, pos.y}, 
+            [&] {
+                m_paused = false; 
+            }
+        );
+        pos.y += sz.y + 10;
+        Ui_customize::MakeButton("Back to Lobby", sz.x, sz.y, 10, {pos.x, pos.y}, 
+            [&] {
+                SceneManager::SetScene(std::make_unique<LobbyScene>());
+            }
+        );
+        Ui_customize::EndFrame();
     }
     
 }

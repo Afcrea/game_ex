@@ -5,6 +5,7 @@ Ui_customize::~Ui_customize() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+    SPDLOG_INFO("ui shutdown");
 }
 
 void Ui_customize::Initialization() {
@@ -15,7 +16,7 @@ void Ui_customize::Initialization() {
     ImGui::StyleColorsDark(); // 스타일을 기본 다크로 시작
 
     // ImGui 백엔드 초기화
-    ImGui_ImplGlfw_InitForOpenGL(glfwGetCurrentContext(), true);
+    ImGui_ImplGlfw_InitForOpenGL(glfwGetCurrentContext(), false);
     ImGui_ImplOpenGL3_Init("#version 330");
 
     // 스타일 커스터마이징
