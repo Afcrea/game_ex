@@ -52,8 +52,8 @@ void PhysXComponent::Init() {
     glm::vec4 localPos = glm::vec4(position, 1.0f);
     glm::vec4 worldPos = model * localPos;
 
-    glm::vec4 localScale = glm::vec4(scale, m_offset);
-    glm::vec4 worldScale = model * localScale;
+    glm::vec4 localScale = glm::vec4(scale, 1.0f);
+    glm::vec4 worldScale = model * localScale * m_offset;
 
     PxBoxGeometry geometry(worldScale.x * 0.5f, worldScale.y * 0.5f, worldScale.z * 0.5f);
     
@@ -107,8 +107,6 @@ void PhysXComponent::Update(float dt) {
 
         // 월드 매트릭스를 통째로 설정
         transform->SetWorldTransformMatrix(modelMat);
-        // SPDLOG_INFO("PhysXComponent::Update() - actor: {}, position = ({:.2f},{:.2f},{:.2f})",
-        //     m_actor->getConcreteTypeName(), pose.p.x, pose.p.y, pose.p.z);
     }
 
     // ———— 3) Box corner 계산 & LineRenderer에 전달

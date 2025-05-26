@@ -22,7 +22,7 @@ void Ground::Init() {
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
     transform->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-    transform->SetScale(glm::vec3(100.0f, 1.0f, 100.0f));
+    transform->SetScale(glm::vec3(100.0f, 1.0f, 500.0f));
     auto physics = AddComponent<PhysXComponent>();
     physics->Configure(false, 10.0f, 0.02f);
     physics->Configure(1.0f, 1.0f, 0.0f);

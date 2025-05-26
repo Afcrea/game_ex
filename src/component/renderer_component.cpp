@@ -64,17 +64,7 @@ void RendererComponent::Render(CameraPtr camera) {
     GLint locViewPos = glGetUniformLocation(m_program->Get(), "viewPos");
     glUniform3fv(locViewPos, 1, glm::value_ptr(viewPos));
 
-    // 라이트 구조체 전달
-    struct Light {
-        glm::vec3 position { glm::vec3(2.0f, 10.0f, 2.0f) };
-        glm::vec3 direction { glm::vec3(180.0f, 0.0f, 0.0f) };
-        glm::vec2 cutoff { glm::vec2(20.0f, 5.0f) };
-        float distance { 32.0f };
-        glm::vec3 ambient { glm::vec3(0.1f, 0.1f, 0.1f) };
-        glm::vec3 diffuse { glm::vec3(0.5f, 0.5f, 0.5f) };
-        glm::vec3 specular { glm::vec3(1.0f, 1.0f, 1.0f) };
-    };
-    Light light;
+    Light light = camera->GetLight();
 
     m_program->SetUniform("light.position", light.position);
     m_program->SetUniform("light.direction", light.direction);

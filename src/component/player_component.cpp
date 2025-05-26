@@ -63,11 +63,6 @@ void PlayerComponent::Update(float dt) {
         auto animator = m_owner->GetComponent<AnimatorComponent>();
         animator->SetCurrentAnimation(0);
     }
-
-    if(Input::GetMouseButtonDown(eMouseButtonCode::Left)) {
-        SPDLOG_INFO("누름");
-        GetOwner()->GetScene()->RequestSpawn<Backpack>();
-    }
 }
 
 void PlayerComponent::OnTriggerEnter(GameObject* other) {
@@ -94,7 +89,7 @@ void PlayerComponent::Render(CameraPtr camera) {
     camera->Follow(
         glm::vec3(worldPos.x, worldPos.y, worldPos.z),
         forward,
-        50.0f,
-        30.0f
+        75.0f,
+        25.0f
     );
 }

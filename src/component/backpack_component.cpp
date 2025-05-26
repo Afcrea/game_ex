@@ -11,8 +11,8 @@ BackPackComponent::~BackPackComponent() {
 }
 
 BackPackComponentUPtr BackPackComponent::Create() {
-    auto player = BackPackComponentUPtr(new BackPackComponent());
-    return std::move(player);
+    auto backpack = BackPackComponentUPtr(new BackPackComponent());
+    return std::move(backpack);
 }
 
 void BackPackComponent::Update(float dt) {

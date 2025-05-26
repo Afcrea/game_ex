@@ -1,6 +1,16 @@
 #pragma once
 #include "common.h"
 
+struct Light {
+        glm::vec3 position { glm::vec3(0.0f, 10.0f, 0.0f) };
+        glm::vec3 direction { glm::vec3(-90.0f, 90.0f, 0.0f) };
+        glm::vec2 cutoff { glm::vec2(20.0f, 5.0f) };
+        float distance { 32.0f };
+        glm::vec3 ambient { glm::vec3(0.1f, 0.1f, 0.1f) };
+        glm::vec3 diffuse { glm::vec3(0.5f, 0.5f, 0.5f) };
+        glm::vec3 specular { glm::vec3(1.0f, 1.0f, 1.0f) };
+};
+
 CLASS_PTR(Camera)
 class Camera {
 public:
@@ -28,6 +38,9 @@ public:
         float distance = 10.0f,
         float height   =  5.0f
     );
+
+    void SetLight(const Light& light) { m_light = light; }
+    const Light& GetLight() const { return m_light; }
 private:
     Camera() = default;
 
@@ -45,4 +58,6 @@ private:
 
     float m_pitch { 0.0f };
     float m_yaw { -90.0f }; // 초기값: -Z 방향
+
+    Light m_light;
 };

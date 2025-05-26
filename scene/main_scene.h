@@ -27,4 +27,14 @@ private:
     CameraPtr m_camera;
 
     bool m_paused = false;
+
+    Light m_light {
+        glm::vec3(0.0f, 100.0f, 0.0f),
+        glm::vec3(0.0f, -90.0f, 180.0f),
+        glm::vec2(20.0f, 5.0f),
+        32.0f,
+        glm::vec3(0.1f, 0.1f, 0.1f),
+        glm::vec3(0.5f, 0.5f, 0.5f),
+        glm::vec3(1.0f, 1.0f, 1.0f)
+    };
 };

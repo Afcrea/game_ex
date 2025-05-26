@@ -27,7 +27,7 @@ void MainScene::Init() {
     RequestSpawn<Backpack>();
 
     m_camera = Camera::Create();
-    m_camera->Configure(45.0f, (float)m_width / (float)m_height, 0.1f, 1000.0f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    m_camera->Configure(45.0f, (float)m_width / (float)m_height, 0.1f, 5000.0f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     // OpenGL 상태 초기화
     glDisable(GL_BLEND);
@@ -78,13 +78,13 @@ void MainScene::Render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_camera->SetView();
-
+    m_camera->SetLight(m_light);
     for(auto gameObject : m_objects) {
         gameObject->Render(m_camera);
     }
-
+    
     if (m_paused) {
-    // ImGui 페이즈
+        // ImGui 페이즈
         Ui_customize::MakeFrame();
         // 화면 중앙에 두 버튼
         ImVec2 sz(200, 50), pos{ 
@@ -104,7 +104,25 @@ void MainScene::Render() {
         );
         Ui_customize::EndFrame();
     }
-    
+    else {
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        if(ImGui::Begin("Editor")) {
+            // light sttings
+            ImGui::Separator();
+            ImGui::Text("Light Settings");
+            ImGui::DragFloat3("Light Position", glm::value_ptr(m_light.position), 1.0f);
+            ImGui::DragFloat3("Light Direction", glm::value_ptr(m_light.direction), 1.0f);
+            ImGui::DragFloat2("Light Cutoff", glm::value_ptr(m_light.cutoff), 1.0f);
+            ImGui::DragFloat("Light Distance", &m_light.distance, 1.0f);
+            ImGui::ColorEdit3("Light Ambient", glm::value_ptr(m_light.ambient));
+            ImGui::ColorEdit3("Light Diffuse", glm::value_ptr(m_light.diffuse));
+            ImGui::ColorEdit3("Light Specular", glm::value_ptr(m_light.specular));
+        }
+        ImGui::End();
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
 }
 
 void MainScene::Shutdown() {

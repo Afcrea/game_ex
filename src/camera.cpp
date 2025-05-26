@@ -74,3 +74,4 @@ void Camera::Follow(
     m_right = glm::normalize(glm::cross(m_front, worldUp));
     m_up    = glm::cross(m_right, m_front);
 }
+
