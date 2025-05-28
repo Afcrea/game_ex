@@ -27,7 +27,9 @@ void TriggerWall::Init(std::string name, glm::vec3 position, glm::vec3 rotation)
     physics->SetTrigger(true);
     physics->Configure(1.0f, 1.0f, 0.0f);
     physics->SetHalfSize(transform->GetScale().x, transform->GetScale().y, transform->GetScale().z);
-    auto lineRenderer = AddComponent<LineRendererComponent>();
+    #if defined(DEBUG)
+        auto lineRenderer = AddComponent<LineRendererComponent>();
+    #endif
     auto triggerwall = AddComponent<TriggerWallComponent>();
 
     for (const auto& [type, component] : m_components) {

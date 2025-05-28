@@ -35,7 +35,9 @@ void Player::Init(glm::vec3 position) {
     animator->Configure("Resource/playerModel/Idle.fbx");
     animator->Configure("Resource/playerModel/Fast_Run.fbx");
     animator->Configure("Resource/playerModel/Walking.fbx");
-    auto lineRenderer = AddComponent<LineRendererComponent>();
+    #if defined(DEBUG)
+        auto lineRenderer = AddComponent<LineRendererComponent>();
+    #endif
 
     for (const auto& [type, component] : m_components) {
         if (component) {

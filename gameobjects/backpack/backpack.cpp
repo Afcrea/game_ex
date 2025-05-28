@@ -28,7 +28,9 @@ void Backpack::Init(glm::vec3 position, ModelPtr model, ProgramPtr program) {
     physics->Configure(false, 1.0f, 1.0f);
     physics->SetTrigger(true);
     physics->SetHalfSize(transform->GetScale().x, transform->GetScale().y, transform->GetScale().z);
-    auto lineRenderer = AddComponent<LineRendererComponent>();
+    #if defined(DEBUG)
+        auto lineRenderer = AddComponent<LineRendererComponent>();
+    #endif
     auto backpack = AddComponent<BackPackComponent>();
 
     for (const auto& [type, component] : m_components) {

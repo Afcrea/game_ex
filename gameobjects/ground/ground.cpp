@@ -28,7 +28,9 @@ void Ground::Init(std::string name, glm::vec3 position, glm::vec3 rotation) {
     physics->Configure(false, 10.0f, 0.02f);
     physics->Configure(1.0f, 1.0f, 0.0f);
     physics->SetHalfSize(transform->GetScale().x, transform->GetScale().y, transform->GetScale().z);
-    auto lineRenderer = AddComponent<LineRendererComponent>();
+    #if defined(DEBUG)
+        auto lineRenderer = AddComponent<LineRendererComponent>();
+    #endif
 
     for (const auto& [type, component] : m_components) {
         if (component) {

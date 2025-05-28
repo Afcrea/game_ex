@@ -22,7 +22,6 @@ void MainScene::Init() {
 
     #if defined(NDEBUG)
         glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
     #endif
 
     RequestSpawn<Ground>("Ground1", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -115,6 +114,7 @@ void MainScene::Render() {
         );
         Ui_customize::EndFrame();
     }
+    #if defined(DEBUG)
     else {
 
         ImGui_ImplGlfw_NewFrame();
@@ -168,6 +168,7 @@ void MainScene::Render() {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
+    #endif
 }
 
 void MainScene::Shutdown() {
