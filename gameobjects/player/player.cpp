@@ -6,14 +6,14 @@
 #include "component/animator_component.h"
 #include "component/linerenderer_component.h"
 
-PlayerPtr Player::Create() {
+PlayerPtr Player::Create(glm::vec3 position) {
     auto player = PlayerPtr(new Player());
-    player->Init();
+    player->Init(position);
 
     return move(player);
 }
 
-void Player::Init() {
+void Player::Init(glm::vec3 position) {
     SetName("Player");
 
     fs = Shader::CreateFromFile("Resource/lighting.fs", GL_FRAGMENT_SHADER);
@@ -23,13 +23,14 @@ void Player::Init() {
     renderer->Configure("Resource/playerModel/Y_Bot.fbx");
     renderer->Configure(std::move(fs), std::move(vs));
     auto transform = AddComponent<TransformComponent>();
-    transform->SetPosition(glm::vec3(2.0f, 5.0f, 0.0f));
+    transform->SetPosition(position);
     transform->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
     transform->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
     auto player = AddComponent<PlayerComponent>();
     auto physics = AddComponent<PhysXComponent>();
     physics->Configure(true, 10.0f, 4.0f);
     physics->Configure(1.0f, 1.0f, 0.0f);
+    physics->SetHalfSize(3.0f, 9.0f, 3.0f);
     auto animator = AddComponent<AnimatorComponent>();
     animator->Configure("Resource/playerModel/Idle.fbx");
     animator->Configure("Resource/playerModel/Fast_Run.fbx");

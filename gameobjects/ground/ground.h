@@ -9,10 +9,10 @@
 CLASS_PTR(Ground)
 class Ground : public GameObject {
 public:
-    static GroundPtr Create();
+    static GroundPtr Create(std::string name, glm::vec3 position, glm::vec3 rotation);
     ~Ground() = default;
 
-    void Init() override;
+    void Init(std::string name, glm::vec3 position, glm::vec3 rotation);
     void Update(float dt) override;
     void Render(CameraPtr camera) override;
     void Shutdown() override;

@@ -8,7 +8,7 @@
 CLASS_PTR(AnimatorComponent);
 class AnimatorComponent : public Component {
 public:
-    static AnimatorComponentUPtr Create();
+    static AnimatorComponentPtr Create();
     ~AnimatorComponent();
 
     void Configure(const std::string& filename);

@@ -10,9 +10,9 @@
 CLASS_PTR(RendererComponent)
 class RendererComponent : public Component {
 public:
-    static RendererComponentUPtr Create();
+    static RendererComponentPtr Create(ModelPtr model = nullptr, ProgramPtr program = nullptr);
     ~RendererComponent();
-    
+    void Init(ModelPtr model, ProgramPtr program);
     void Configure(const std::string& filename);
     void Configure(ShaderPtr fs, ShaderPtr vs);
     void Render(CameraPtr camera) override;
@@ -21,5 +21,5 @@ public:
 private:
     
     ModelPtr m_model;
-    ProgramUPtr m_program;
+    ProgramPtr m_program;
 };

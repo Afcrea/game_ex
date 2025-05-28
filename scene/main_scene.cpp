@@ -3,6 +3,8 @@
 #include "player/player.h"
 #include "backpack/backpack.h"
 #include "ground/ground.h"
+#include "wall/wall.h"
+#include "triggerwall/triggerwall.h"
 
 #include "component/renderer_component.h"
 #include "component/transform_component.h"
@@ -12,6 +14,8 @@
 #include "physics.h"
 #include "ui_customize.h"
 #include "scene_manager.h"
+#include "model.h"
+#include "program.h"
 
 void MainScene::Init() {
     Physics::Initialize();
@@ -20,14 +24,21 @@ void MainScene::Init() {
         glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     #endif
-    // 초기화
-    RequestSpawn<Ground>();
-    RequestSpawn<Player>();
-    RequestSpawn<Backpack>();
-    RequestSpawn<Backpack>();
 
+    RequestSpawn<Ground>("Ground1", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    RequestSpawn<Ground>("Ground2", glm::vec3(0.0f, 0.0f, 1.8f), glm::vec3(0.0f, 0.0f, 0.0f));
+    RequestSpawn<Ground>("Ground3", glm::vec3(0.0f, 0.0f, -1.8f), glm::vec3(0.0f, 0.0f, 0.0f));
+    RequestSpawn<Player>(glm::vec3(2.0f, 5.0f, -10.0f));
+    RequestSpawn<Wall>("LeftWall1", glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    RequestSpawn<Wall>("LeftWall2", glm::vec3(25.0f, 0.0f, 1.8f), glm::vec3(0.0f, 0.0f, 0.0f));
+    RequestSpawn<Wall>("LeftWall3", glm::vec3(25.0f, 0.0f, -1.8f), glm::vec3(0.0f, 0.0f, 0.0f));
+    RequestSpawn<Wall>("RightWall1", glm::vec3(-25.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    RequestSpawn<Wall>("RightWall2", glm::vec3(-25.0f, 0.0f, 1.8f), glm::vec3(0.0f, 0.0f, 0.0f));
+    RequestSpawn<Wall>("RightWall3", glm::vec3(-25.0f, 0.0f, -1.8f), glm::vec3(0.0f, 0.0f, 0.0f));
+    RequestSpawn<TriggerWall>("TriggerWall1", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    
     m_camera = Camera::Create();
-    m_camera->Configure(45.0f, (float)m_width / (float)m_height, 0.1f, 5000.0f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    m_camera->Configure(45.0f, (float)m_width / (float)m_height, 0.1f, 1000.0f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     // OpenGL 상태 초기화
     glDisable(GL_BLEND);
@@ -49,7 +60,7 @@ void MainScene::Update(float deltaTime) {
     if (m_paused) return;
 
     for (auto& req : m_pendingSpawn) {
-        req.fn();  
+        req.fn();
     }
     m_pendingSpawn.clear();
 
@@ -105,9 +116,43 @@ void MainScene::Render() {
         Ui_customize::EndFrame();
     }
     else {
+
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         if(ImGui::Begin("Editor")) {
+            // object list
+            ImGui::Text("Game Objects");
+            ImGui::Separator();
+            for (auto& obj : m_objects) {
+                // 오브젝트 이름
+                auto n = obj->GetName();
+                if (ImGui::CollapsingHeader(n.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+                    // 오브젝트 포지션 및 피직스 포즈 출력
+                    auto transform = obj->GetComponent<TransformComponent>();
+                    if (transform) {
+                        auto pos = transform->GetPosition();
+                        auto rot = transform->GetRotation();
+                        ImGui::DragFloat3("Position:", glm::value_ptr(pos), 0.1f);
+                        ImGui::DragFloat3("Rotation:", glm::value_ptr(rot), 0.1f);
+                    }
+                    auto physx = obj->GetComponent<PhysXComponent>();
+                    if (physx) {
+                        auto actor = physx->GetActor();
+                        if (!actor) continue; // actor가 없으면 스킵
+                        // PhysX 포즈 출력
+                        auto physxPose = actor->getGlobalPose();
+                        auto physxPos = physxPose.p;
+                        auto physxRot = physxPose.q;
+                        glm::vec3 physxPos3(physxPos.x, physxPos.y, physxPos.z);
+                        glm::vec3 physxRot3(physxRot.x, physxRot.y, physxRot.z);
+                        ImGui::DragFloat3("PhysX Pose:", glm::value_ptr(physxPos3), 0.1f);
+                        ImGui::DragFloat3("PhysX Rotation:", glm::value_ptr(physxRot3), 0.1f);
+                        // 크기
+                        
+                    }
+
+                }
+            }
             // light sttings
             ImGui::Separator();
             ImGui::Text("Light Settings");

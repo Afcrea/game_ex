@@ -10,8 +10,8 @@
 PlayerComponent::~PlayerComponent() {
 }
 
-PlayerComponentUPtr PlayerComponent::Create() {
-    auto player = PlayerComponentUPtr(new PlayerComponent());
+PlayerComponentPtr PlayerComponent::Create() {
+    auto player = PlayerComponentPtr(new PlayerComponent());
     return std::move(player);
 }
 
@@ -25,18 +25,10 @@ void PlayerComponent::Update(float dt) {
     PxVec3 currentVelocity = actor->getLinearVelocity();
 
     PxVec3 desiredVelocity = PxVec3(0.0f, 0.0f, 0.0f); // 기본적으로 유지
-    float moveSpeed = 5.0f;
+    float moveSpeed = m_speed;
 
-    if(Input::GetKey(eKeyCode::ShiftLeft)) {
-        moveSpeed = 20.0f;
-    }
-
-    if (Input::GetKey(eKeyCode::W)) {
-        desiredVelocity.z = moveSpeed;
-    }
-    if (Input::GetKey(eKeyCode::S)) {
-        desiredVelocity.z = -moveSpeed;
-    }
+    desiredVelocity.z = moveSpeed;
+    
     if (Input::GetKey(eKeyCode::A)) {
         desiredVelocity.x = moveSpeed;
     }
@@ -51,7 +43,7 @@ void PlayerComponent::Update(float dt) {
 
     auto transform = m_owner->GetComponent<TransformComponent>();
 
-    if((desiredVelocity.x != 0.0f || desiredVelocity.z != 0.0f) && moveSpeed < 10.0f) {
+    if((desiredVelocity.x != 0.0f || desiredVelocity.z != 0.0f) && moveSpeed <= 10.0f) {
         auto animator = m_owner->GetComponent<AnimatorComponent>();
         animator->SetCurrentAnimation(2);
     }
@@ -69,6 +61,9 @@ void PlayerComponent::OnTriggerEnter(GameObject* other) {
     if (other->GetName() == "Backpack") {
         SPDLOG_INFO("PlayerComponent::OnTriggerEnter: Coin collected!");
         m_owner->GetScene()->Destroy(other);
+        m_score += 1;
+        m_speed += 1.0f;
+
     }
 }
 

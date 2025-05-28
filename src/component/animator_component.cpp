@@ -3,8 +3,8 @@
 #include "transform_component.h"
 #include "gameobject.h"
 
-AnimatorComponentUPtr AnimatorComponent::Create() {
-    auto animator = AnimatorComponentUPtr(new AnimatorComponent());
+AnimatorComponentPtr AnimatorComponent::Create() {
+    auto animator = AnimatorComponentPtr(new AnimatorComponent());
     return std::move(animator);
 }
 

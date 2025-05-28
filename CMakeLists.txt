@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 set(PROJECT_NAME game_ex)
 project(${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(WINDOW_NAME "game")
 set(WINDOW_WIDTH 640)
@@ -29,6 +30,7 @@ add_executable(${PROJECT_NAME}
     src/component/animator_component.h src/component/animator_component.cpp
     src/component/linerenderer_component.h src/component/linerenderer_component.cpp
     src/component/backpack_component.h src/component/backpack_component.cpp
+    src/component/triggerwall_component.h src/component/triggerwall_component.cpp
     
     scene/scene.h scene/scene_manager.h scene/scene_manager.cpp
     scene/lobby_scene.h scene/lobby_scene.cpp
@@ -38,6 +40,8 @@ add_executable(${PROJECT_NAME}
     gameobjects/player/player.h gameobjects/player/player.cpp
     gameobjects/backpack/backpack.h gameobjects/backpack/backpack.cpp
     gameobjects/ground/ground.h gameobjects/ground/ground.cpp
+    gameobjects/wall/wall.h gameobjects/wall/wall.cpp
+    gameobjects/triggerwall/triggerwall.h gameobjects/triggerwall/triggerwall.cpp
     
     render/program.h render/program.cpp
     render/shader.h render/shader.cpp

@@ -4,7 +4,7 @@
 CLASS_PTR(PlayerComponent)
 class PlayerComponent : public Component {
 public:
-    static PlayerComponentUPtr Create();
+    static PlayerComponentPtr Create();
     ~PlayerComponent();
     
     void Update(float deltaTime) override;
@@ -12,4 +12,6 @@ public:
     
     void OnTriggerEnter(GameObject* other) override;
 private:
+    float m_speed = 10.0f;
+    int m_score = 0;
 };

@@ -2,7 +2,8 @@
 #pragma once
 #include "common.h"
 #include "gameobject.h"
-
+#include "model.h"
+#include "program.h"
 
 CLASS_PTR(Scene)
 class Scene {
@@ -14,12 +15,17 @@ public:
     virtual void Render() = 0;
     virtual void Shutdown() = 0;
 
+    std::vector<GameObjectPtr> GetAllObjects() const {
+        return m_objects;
+    }
+
     struct SpawnRequest {
         std::function<void()> fn;
     };
 
     template<typename T, typename... Args>
     void RequestSpawn(Args&&... args) {
+        //using Tup = std::tuple<std::decay_t<Args>...>;
         m_pendingSpawn.push_back({
             [this, tup = std::make_tuple(std::forward<Args>(args)...)]() mutable {
                 // 실제 스폰은 여기서

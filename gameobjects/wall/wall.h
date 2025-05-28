@@ -1,22 +1,23 @@
 #pragma once
+
 #include "common.h"
 #include "gameobject.h"
 #include "shader.h"
 #include "buffer.h"
 #include "vertex_layout.h"
 
-CLASS_PTR(Player)
-class Player : public GameObject{
+CLASS_PTR(Wall)
+class Wall : public GameObject{
 public:
-    ~Player() = default;
-    PlayerPtr static Create(glm::vec3 position);
-    void Init(glm::vec3 position);
+    ~Wall() = default;
+    WallPtr static Create(std::string name, glm::vec3 position, glm::vec3 rotation);
+    void Init(std::string name, glm::vec3 position, glm::vec3 rotation);
     void Update(float dt) override;
     void Render(CameraPtr camera) override;
     void Shutdown() override;
 
 private:
-    Player() {};
+    Wall() {};
 
     ShaderUPtr fs;
     ShaderUPtr vs;

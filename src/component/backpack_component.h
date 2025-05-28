@@ -4,7 +4,7 @@
 CLASS_PTR(BackPackComponent)
 class BackPackComponent : public Component {
 public:
-    static BackPackComponentUPtr Create();
+    static BackPackComponentPtr Create();
     ~BackPackComponent();
     
     void Update(float deltaTime) override;

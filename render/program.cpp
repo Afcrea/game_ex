@@ -7,7 +7,16 @@ ProgramUPtr Program::Create(const std::vector<ShaderPtr>& shaders) {
       return nullptr;
 
     return std::move(program);
-  }
+}
+
+ProgramPtr Program::CreateShared(const std::vector<ShaderPtr>& shaders) {
+    auto program = ProgramPtr(new Program());
+
+    if (!program->Link(shaders))
+      return nullptr;
+
+    return std::move(program);
+}
 
 ProgramUPtr Program::Create(
     const std::string& vertShaderFilename,

@@ -35,7 +35,7 @@ public:
     // 컴포넌트 추가
     template<typename T, typename... Args>
     std::shared_ptr<T> AddComponent(Args&&... args) {
-        auto comp = std::make_shared<T>(std::forward<Args>(args)...);
+        auto comp = T::Create(std::forward<Args>(args)...);
         comp->SetOwner(this);
         m_components[typeid(T)] = comp;
         return comp;
@@ -49,6 +49,16 @@ public:
             return std::static_pointer_cast<T>(it->second);
         }
         return nullptr;
+    }
+
+    // 컴포넌트 제거
+    template<typename T>
+    void RemoveComponent() {
+        auto it = m_components.find(typeid(T));
+        if (it != m_components.end()) {
+            it->second->Shutdown();
+            m_components.erase(it);
+        }
     }
 
     const std::unordered_map<std::type_index, ComponentPtr>& GetAllComponents() const { return m_components; }

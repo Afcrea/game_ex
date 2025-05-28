@@ -10,8 +10,17 @@ class PhysXComponent : public Component {
 public:
     static PhysXComponentPtr Create();
     ~PhysXComponent();
-    void Configure(bool isDynamic, float mass = 1.0f, float offset = 1.0f);
-    void Configure(float staticFriction, float dynamicFriction, float restitution);
+    void Configure(bool isDynamic, float mass = 1.0f, float offset = 1.0f) {
+        m_isDynamic = isDynamic;
+        m_mass = mass;
+        m_offset = offset;
+    }
+    void Configure(float staticFriction, float dynamicFriction, float restitution) {
+        m_staticFriction = staticFriction;
+        m_dynamicFriction = dynamicFriction;
+        m_restitution = restitution;
+    }
+    void SetHalfSize(float halfX, float halfY, float halfZ) { m_halfSize = glm::vec3(halfX, halfY, halfZ); }
     void SetTrigger(bool isTrigger) { m_isTrigger = isTrigger; }
 
     void Init() override;
@@ -30,6 +39,6 @@ private:
     float m_staticFriction = 0.5f;
     float m_restitution = 0.5f;
     float m_offset = 1.0f;
-
+    glm::vec3 m_halfSize = glm::vec3(1.0f, 1.0f, 1.0f);
     PxRigidActor* m_actor = nullptr;
 };

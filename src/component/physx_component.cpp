@@ -23,18 +23,6 @@ PhysXComponentPtr PhysXComponent::Create() {
     return std::move(physx);
 }
 
-void PhysXComponent::Configure(bool isDynamic, float mass, float offset) {
-    m_offset = offset; 
-    m_isDynamic = isDynamic; 
-    m_mass = mass; 
-}
-
-void PhysXComponent::Configure(float staticFriction, float dynamicFriction, float restitution) { 
-    m_staticFriction = staticFriction; 
-    m_dynamicFriction = dynamicFriction; 
-    m_restitution = restitution;
-}
-
 PxRigidDynamic* PhysXComponent::GetDynamicActor() const {
     if (!m_isDynamic || !m_actor) return nullptr;
     return static_cast<PxRigidDynamic*>(m_actor);
@@ -55,7 +43,8 @@ void PhysXComponent::Init() {
     glm::vec4 localScale = glm::vec4(scale, 1.0f);
     glm::vec4 worldScale = model * localScale * m_offset;
 
-    PxBoxGeometry geometry(worldScale.x * 0.5f, worldScale.y * 0.5f, worldScale.z * 0.5f);
+    //PxBoxGeometry geometry(worldScale.x * 0.5f, worldScale.y * 0.5f, worldScale.z * 0.5f);
+    PxBoxGeometry geometry(m_halfSize.x, m_halfSize.y, m_halfSize.z);
     
     PxTransform physxTransform(PxVec3(worldPos.x, worldPos.y, worldPos.z));
     PxMaterial* material = Physics::GetSDK()->createMaterial(m_staticFriction, m_dynamicFriction, m_restitution);

@@ -6,10 +6,18 @@
 RendererComponent::~RendererComponent() {
 }
 
-RendererComponentUPtr RendererComponent::Create() {
-    auto renderer = RendererComponentUPtr(new RendererComponent());
+RendererComponentPtr RendererComponent::Create(ModelPtr model, ProgramPtr program) {
+    auto renderer = RendererComponentPtr(new RendererComponent());
+    if(model || program)
+        renderer->Init(model, program);
     return std::move(renderer);
 }
+
+void RendererComponent::Init(ModelPtr model, ProgramPtr program) {
+    m_model = std::move(model);
+    m_program = std::move(program);
+}
+
 // 파라미터에 모델 경로만 넘겨주고 플레이어에서 실행
 void RendererComponent::Configure(const std::string& filename) {
     m_model =  Model::Load(filename);
@@ -20,6 +28,10 @@ void RendererComponent::Configure(ShaderPtr fs, ShaderPtr vs) {
 }
 
 void RendererComponent::Render(CameraPtr camera) {
+    if(m_model == nullptr || m_program == nullptr) {
+        SPDLOG_ERROR("RendererComponent::Render - Model or Program is not configured.");
+        return;
+    }
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
 

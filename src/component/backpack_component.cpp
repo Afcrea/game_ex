@@ -10,7 +10,7 @@
 BackPackComponent::~BackPackComponent() {
 }
 
-BackPackComponentUPtr BackPackComponent::Create() {
+BackPackComponentPtr BackPackComponent::Create() {
     auto backpack = BackPackComponentUPtr(new BackPackComponent());
     return std::move(backpack);
 }
@@ -32,9 +32,11 @@ void BackPackComponent::Update(float dt) {
 
         if((static_cast<int>(glfwGetTime()) % 20) >= 10.0f) {
             moveSpeed = -5.0f;
+            moveSpeed = 0.0f;
         }
         else {
             moveSpeed = 5.0f;
+            moveSpeed = 0.0f;
         }
 
         glm::vec3 newPos = position;
